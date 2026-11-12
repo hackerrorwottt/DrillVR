@@ -118,8 +118,9 @@ namespace DrillVR.Hazards
             _lastExposurePenaltyTime = -999f;
             SetRadius(initialRadius);
 
-            if (smokeParticles != null && !smokeParticles.isPlaying)
+            if (smokeParticles != null)
             {
+                smokeParticles.Clear();
                 smokeParticles.Play();
             }
         }
