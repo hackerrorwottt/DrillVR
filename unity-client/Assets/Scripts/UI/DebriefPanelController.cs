@@ -5,6 +5,7 @@ using DrillVR.Assessment;
 using DrillVR.Core;
 using DrillVR.Equipment;
 using DrillVR.Interactions;
+using DrillVR.Network;
 using DrillVR.Player;
 
 namespace DrillVR.UI
@@ -19,6 +20,8 @@ namespace DrillVR.UI
         [SerializeField] private AssessmentManager assessmentManager;
         [SerializeField] private MissionManager missionManager;
         [SerializeField] private UIManager uiManager;
+        [SerializeField] private DrillBackendSync backendSync;
+        [SerializeField] private ApiClient apiClient;
         [SerializeField] private EditorWalkController playerRig;
         [SerializeField] private Transform cameraTransform;
 
@@ -29,8 +32,10 @@ namespace DrillVR.UI
         [SerializeField] private Text stepTimesText;
         [SerializeField] private Text improveText;
         [SerializeField] private Text disclaimerText;
+        [SerializeField] private Text syncStatusText;
         [SerializeField] private GazeButton restartButton;
         [SerializeField] private GazeButton mainMenuButton;
+        [SerializeField] private GazeButton retrySyncButton;
 
         [Header("Spawn Reset")]
         [SerializeField] private Vector3 spawnPosition = new Vector3(-15.5f, 0f, 0f);
@@ -41,6 +46,8 @@ namespace DrillVR.UI
             if (assessmentManager == null) assessmentManager = FindObjectOfType<AssessmentManager>();
             if (missionManager == null) missionManager = FindObjectOfType<MissionManager>();
             if (uiManager == null) uiManager = FindObjectOfType<UIManager>();
+            if (backendSync == null) backendSync = FindObjectOfType<DrillBackendSync>();
+            if (apiClient == null) apiClient = FindObjectOfType<ApiClient>();
             if (playerRig == null) playerRig = FindObjectOfType<EditorWalkController>();
             if (cameraTransform == null && Camera.main != null) cameraTransform = Camera.main.transform;
 
@@ -53,15 +60,19 @@ namespace DrillVR.UI
         private void OnEnable()
         {
             if (assessmentManager != null) assessmentManager.OnReportGenerated += ShowReport;
+            if (backendSync != null) backendSync.OnSyncStatusChanged += HandleSyncStatusChanged;
             if (restartButton != null) restartButton.OnClicked += HandleRestartClicked;
             if (mainMenuButton != null) mainMenuButton.OnClicked += HandleMainMenuClicked;
+            if (retrySyncButton != null) retrySyncButton.OnClicked += HandleRetrySyncClicked;
         }
 
         private void OnDisable()
         {
             if (assessmentManager != null) assessmentManager.OnReportGenerated -= ShowReport;
+            if (backendSync != null) backendSync.OnSyncStatusChanged -= HandleSyncStatusChanged;
             if (restartButton != null) restartButton.OnClicked -= HandleRestartClicked;
             if (mainMenuButton != null) mainMenuButton.OnClicked -= HandleMainMenuClicked;
+            if (retrySyncButton != null) retrySyncButton.OnClicked -= HandleRetrySyncClicked;
         }
 
         public void ShowReport(DrillReport report)
@@ -152,6 +163,23 @@ namespace DrillVR.UI
             ResetScenePropsAndPlayer();
             if (debriefPanel != null) debriefPanel.SetActive(false);
             if (uiManager != null) uiManager.ShowMainMenu();
+        }
+
+        private void HandleSyncStatusChanged(string message)
+        {
+            if (syncStatusText != null)
+            {
+                syncStatusText.text = message;
+            }
+        }
+
+        private void HandleRetrySyncClicked()
+        {
+            if (apiClient != null)
+            {
+                HandleSyncStatusChanged("Retrying offline session queue...");
+                apiClient.FlushOfflineQueue();
+            }
         }
 
         private void ResetScenePropsAndPlayer()
