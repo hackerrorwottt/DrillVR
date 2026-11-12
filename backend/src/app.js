@@ -1,3 +1,4 @@
+const path = require('path');
 const express = require('express');
 const cors = require('cors');
 const { notFoundHandler, errorHandler } = require('./middleware/errorHandler');
@@ -27,6 +28,7 @@ function createApp(pool) {
   app.use('/api', createSessionRouter(pool));
   app.use('/api/users', createUserRouter(pool));
   app.use('/api/instructor', createInstructorRouter(pool));
+  app.use('/dashboard', express.static(path.join(__dirname, '../../dashboard')));
 
   app.use(notFoundHandler);
   app.use(errorHandler);
