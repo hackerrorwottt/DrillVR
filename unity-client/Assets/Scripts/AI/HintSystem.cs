@@ -1,6 +1,7 @@
 using UnityEngine;
 using UnityEngine.UI;
 using DrillVR.Core;
+using DrillVR.Interactions;
 
 namespace DrillVR.AI
 {
@@ -17,6 +18,7 @@ namespace DrillVR.AI
         [SerializeField] private GameObject hintPanel;
         [SerializeField] private Text hintHeaderText;
         [SerializeField] private Text hintBodyText;
+        [SerializeField] private GazeButton hintToggleButton;
         [SerializeField] private Text toggleButtonLabel;
 
         [Header("Settings")]
@@ -41,6 +43,10 @@ namespace DrillVR.AI
 
         private void OnEnable()
         {
+            if (hintToggleButton != null)
+            {
+                hintToggleButton.OnClicked += ToggleHints;
+            }
             if (missionManager != null)
             {
                 missionManager.OnDrillStarted += HandleDrillStarted;
@@ -52,6 +58,10 @@ namespace DrillVR.AI
 
         private void OnDisable()
         {
+            if (hintToggleButton != null)
+            {
+                hintToggleButton.OnClicked -= ToggleHints;
+            }
             if (missionManager != null)
             {
                 missionManager.OnDrillStarted -= HandleDrillStarted;
