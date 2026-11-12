@@ -127,9 +127,9 @@ namespace DrillVR.EditorTools
             InputField urlField = CreateInputField("Input_BaseUrl", authPanel.transform, uiFont, "http://127.0.0.1:4000",
                 new Vector2(0f, 160f), new Vector2(560f, 38f), false);
             InputField nameField = CreateInputField("Input_Name", authPanel.transform, uiFont, "Name (for Register)",
-                new Vector2(-190f, 110f), new Vector2(260f, 38f), false);
+                new Vector2(-145f, 110f), new Vector2(270f, 38f), false);
             InputField emailField = CreateInputField("Input_Email", authPanel.transform, uiFont, "Email",
-                new Vector2(100f, 110f), new Vector2(290f, 38f), false);
+                new Vector2(145f, 110f), new Vector2(270f, 38f), false);
             InputField passField = CreateInputField("Input_Password", authPanel.transform, uiFont, "Password",
                 new Vector2(0f, 62f), new Vector2(560f, 38f), true);
 

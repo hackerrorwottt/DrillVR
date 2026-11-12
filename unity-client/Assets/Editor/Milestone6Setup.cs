@@ -107,7 +107,7 @@ namespace DrillVR.EditorTools
             bg.raycastTarget = false;
 
             RectTransform pRect = hintPanel.GetComponent<RectTransform>();
-            pRect.localPosition = new Vector2(0f, -130f);
+            pRect.localPosition = new Vector2(0f, -148f);
             pRect.sizeDelta = new Vector2(390f, 64f);
 
             Text header = CreateText("HintHeader", hintPanel.transform, uiFont, "INSTRUCTOR HINT", 13,
@@ -128,12 +128,16 @@ namespace DrillVR.EditorTools
                     RectTransform r = startTr.GetComponent<RectTransform>();
                     r.anchoredPosition = new Vector2(-95f, -45f);
                     r.sizeDelta = new Vector2(260f, 54f);
+                    BoxCollider colStart = startTr.GetComponent<BoxCollider>();
+                    if (colStart != null) colStart.size = new Vector3(260f, 54f, 12f);
                 }
                 if (instrTr != null)
                 {
                     RectTransform r = instrTr.GetComponent<RectTransform>();
                     r.anchoredPosition = new Vector2(-95f, -115f);
                     r.sizeDelta = new Vector2(260f, 54f);
+                    BoxCollider colInstr = instrTr.GetComponent<BoxCollider>();
+                    if (colInstr != null) colInstr.size = new Vector3(260f, 54f, 12f);
                 }
 
                 GameObject btnGo = new GameObject("Btn_ToggleHints");
