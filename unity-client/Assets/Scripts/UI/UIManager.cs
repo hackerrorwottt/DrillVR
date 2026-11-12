@@ -24,6 +24,7 @@ namespace DrillVR.UI
         [SerializeField] private GazeInteractor gazeInteractor;
         [SerializeField] private Text hoverPromptText;
         [SerializeField] private Text hudStatusText;
+        [SerializeField] private bool showMenuOnStart = true;
 
         public event Action OnStartDrillRequested;
 
@@ -53,8 +54,15 @@ namespace DrillVR.UI
 
         private void Start()
         {
-            ShowMainMenu();
-            SetHudStatus("Look at a button to select (dwell 1.5s or tap)");
+            if (showMenuOnStart)
+            {
+                ShowMainMenu();
+                SetHudStatus("Look at a button to select (dwell 1.5s or tap)");
+            }
+            else
+            {
+                HideAllMenus();
+            }
         }
 
         public void ShowMainMenu()
