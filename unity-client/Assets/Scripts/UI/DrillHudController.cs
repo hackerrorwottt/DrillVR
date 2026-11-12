@@ -1,14 +1,16 @@
 using UnityEngine;
 using UnityEngine.UI;
+using DrillVR.AI;
 using DrillVR.Core;
 using DrillVR.Equipment;
 using DrillVR.Hazards;
+using DrillVR.Rescue;
 
 namespace DrillVR.UI
 {
     /// <summary>
     /// Updates the player's world-space HUD during an active drill by listening
-    /// to MissionManager, SituationAssessmentTracker, and EquipmentSelectionSystem events.
+    /// to MissionManager, SituationAssessmentTracker, Equipment, Rescue, and Evacuation events.
     /// </summary>
     public class DrillHudController : MonoBehaviour
     {
@@ -16,11 +18,14 @@ namespace DrillVR.UI
         [SerializeField] private MissionManager missionManager;
         [SerializeField] private SituationAssessmentTracker assessmentTracker;
         [SerializeField] private EquipmentSelectionSystem equipmentSystem;
+        [SerializeField] private RescueSystem rescueSystem;
+        [SerializeField] private EvacuationSystem evacuationSystem;
         [SerializeField] private UIManager uiManager;
 
         [Header("HUD Text Elements")]
         [SerializeField] private Text stepTitleText;
         [SerializeField] private Text mistakeCountText;
+        [SerializeField] private Text casualtyStatusText;
         [SerializeField] private Text alertBannerText;
 
         private float _alertClearTime;
@@ -30,6 +35,8 @@ namespace DrillVR.UI
             if (missionManager == null) missionManager = FindObjectOfType<MissionManager>();
             if (assessmentTracker == null) assessmentTracker = FindObjectOfType<SituationAssessmentTracker>();
             if (equipmentSystem == null) equipmentSystem = FindObjectOfType<EquipmentSelectionSystem>();
+            if (rescueSystem == null) rescueSystem = FindObjectOfType<RescueSystem>();
+            if (evacuationSystem == null) evacuationSystem = FindObjectOfType<EvacuationSystem>();
             if (uiManager == null) uiManager = FindObjectOfType<UIManager>();
         }
 
@@ -52,6 +59,17 @@ namespace DrillVR.UI
             {
                 equipmentSystem.OnEquipmentCollected += HandleEquipmentCollected;
             }
+
+            if (rescueSystem != null)
+            {
+                rescueSystem.OnCasualtyFound += HandleCasualtyFound;
+            }
+
+            if (evacuationSystem != null)
+            {
+                evacuationSystem.OnCasualtyEvacuated += HandleCasualtyEvacuated;
+                evacuationSystem.OnCasualtyLost += HandleCasualtyLost;
+            }
         }
 
         private void OnDisable()
@@ -73,6 +91,17 @@ namespace DrillVR.UI
             {
                 equipmentSystem.OnEquipmentCollected -= HandleEquipmentCollected;
             }
+
+            if (rescueSystem != null)
+            {
+                rescueSystem.OnCasualtyFound -= HandleCasualtyFound;
+            }
+
+            if (evacuationSystem != null)
+            {
+                evacuationSystem.OnCasualtyEvacuated -= HandleCasualtyEvacuated;
+                evacuationSystem.OnCasualtyLost -= HandleCasualtyLost;
+            }
         }
 
         private void Update()
@@ -86,6 +115,7 @@ namespace DrillVR.UI
         private void HandleDrillStarted(ScenarioConfig config)
         {
             UpdateMistakeLabel(0);
+            RefreshCasualtyLabel();
             ShowAlert($"Started: {config.scenarioTitle}", Color.cyan, 3.5f);
         }
 
@@ -117,6 +147,36 @@ namespace DrillVR.UI
         private void HandleEquipmentCollected(EquipmentData item, int count, int total)
         {
             ShowAlert($"Equipped {item.displayName} ({count}/{total})", Color.green, 3.0f);
+        }
+
+        private void HandleCasualtyFound(CasualtyAI casualty, int found, int total)
+        {
+            RefreshCasualtyLabel();
+            ShowAlert($"Casualty Rescued ({found}/{total}) — Follow active!", Color.green, 3.0f);
+        }
+
+        private void HandleCasualtyEvacuated(CasualtyAI casualty, int safeCount, int total)
+        {
+            RefreshCasualtyLabel();
+            ShowAlert($"Casualty Safe ({safeCount}/{total})!", Color.green, 3.0f);
+        }
+
+        private void HandleCasualtyLost(CasualtyAI casualty, int lostCount)
+        {
+            RefreshCasualtyLabel();
+        }
+
+        private void RefreshCasualtyLabel()
+        {
+            if (casualtyStatusText == null || rescueSystem == null)
+            {
+                return;
+            }
+
+            int total = rescueSystem.TotalCasualties;
+            int found = rescueSystem.FoundCount;
+            int safe = evacuationSystem != null ? evacuationSystem.EvacuatedCount : 0;
+            casualtyStatusText.text = $"Found: {found}/{total} | Safe: {safe}/{total}";
         }
 
         private void HandleDrillCompleted(bool success, string summary)
