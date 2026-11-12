@@ -1,6 +1,7 @@
 using UnityEngine;
 using DrillVR.Core;
 using DrillVR.Interactions;
+using DrillVR.Rescue;
 
 namespace DrillVR.Environment
 {
@@ -19,6 +20,7 @@ namespace DrillVR.Environment
 
         [Header("Dependencies")]
         [SerializeField] private MissionManager missionManager;
+        [SerializeField] private EvacuationSystem evacuationSystem;
         [SerializeField] private Transform playerTransform;
 
         private BoxCollider _zoneCollider;
@@ -31,6 +33,7 @@ namespace DrillVR.Environment
             _zoneCollider.isTrigger = true;
 
             if (missionManager == null) missionManager = FindObjectOfType<MissionManager>();
+            if (evacuationSystem == null) evacuationSystem = GetComponent<EvacuationSystem>();
             if (playerTransform == null && Camera.main != null)
             {
                 playerTransform = Camera.main.transform.root;
@@ -73,7 +76,8 @@ namespace DrillVR.Environment
 
             if (isSafeAlternativeRoute)
             {
-                if (missionManager.IsOnStep(evacuationStepKey))
+                // When EvacuationSystem is attached (M5+), it waits for rescued casualties to arrive too.
+                if (evacuationSystem == null && missionManager.IsOnStep(evacuationStepKey))
                 {
                     missionManager.CompleteStep(evacuationStepKey);
                 }
