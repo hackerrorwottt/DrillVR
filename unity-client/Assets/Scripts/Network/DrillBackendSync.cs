@@ -56,7 +56,8 @@ namespace DrillVR.Network
         {
             if (missionManager != null && missionManager.Config != null && scenarioData != null)
             {
-                ScenarioConfig config = missionManager.Config;
+                // Clone the asset at runtime so Editor Play Mode never mutates .asset files on disk
+                ScenarioConfig config = ScriptableObject.Instantiate(missionManager.Config);
                 if (scenarioData.scenario != null)
                 {
                     config.scenarioCode = scenarioData.scenario.code;
@@ -68,27 +69,28 @@ namespace DrillVR.Network
 
                 if (scenarioData.steps != null && scenarioData.steps.Count > 0)
                 {
-                    // Update existing StepData assets or create runtime StepData objects cleanly
                     var runtimeSteps = new List<StepData>(scenarioData.steps.Count);
                     for (int i = 0; i < scenarioData.steps.Count; i++)
                     {
                         ScenarioStepDto dto = scenarioData.steps[i];
-                        StepData stepAsset = i < config.steps.Count && config.steps[i] != null
-                            ? config.steps[i]
+                        StepData stepClone = i < config.steps.Count && config.steps[i] != null
+                            ? ScriptableObject.Instantiate(config.steps[i])
                             : ScriptableObject.CreateInstance<StepData>();
 
-                        stepAsset.stepNumber = dto.step_number;
-                        stepAsset.stepKey = dto.step_key;
-                        stepAsset.title = dto.title;
-                        stepAsset.instruction = dto.instruction;
-                        stepAsset.defaultHint = dto.default_hint;
-                        stepAsset.mistakeHint = dto.mistake_hint;
-                        stepAsset.expectedTimeSeconds = dto.expected_time_seconds;
-                        stepAsset.weightPercent = dto.weight_percent;
-                        runtimeSteps.Add(stepAsset);
+                        stepClone.stepNumber = dto.step_number;
+                        stepClone.stepKey = dto.step_key;
+                        stepClone.title = dto.title;
+                        stepClone.instruction = dto.instruction;
+                        stepClone.defaultHint = dto.default_hint;
+                        stepClone.mistakeHint = dto.mistake_hint;
+                        stepClone.expectedTimeSeconds = dto.expected_time_seconds;
+                        stepClone.weightPercent = dto.weight_percent;
+                        runtimeSteps.Add(stepClone);
                     }
                     config.steps = runtimeSteps;
                 }
+
+                missionManager.SetScenarioConfig(config);
             }
 
             ApplyDifficulty(difficulty);
