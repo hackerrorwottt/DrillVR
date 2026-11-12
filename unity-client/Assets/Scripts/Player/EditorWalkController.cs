@@ -21,6 +21,7 @@ namespace DrillVR.Player
         private float _verticalVelocity;
         private float _yaw;
         private float _pitch;
+        private bool _cursorLockedMode;
 
         private void Awake()
         {
@@ -72,7 +73,21 @@ namespace DrillVR.Player
 
         private void HandleEditorMouseLook()
         {
-            if (!Input.GetMouseButton(1))
+            if (Input.GetKeyDown(KeyCode.L))
+            {
+                _cursorLockedMode = !_cursorLockedMode;
+                Cursor.lockState = _cursorLockedMode ? CursorLockMode.Locked : CursorLockMode.None;
+                Cursor.visible = !_cursorLockedMode;
+            }
+
+            if (Input.GetKeyDown(KeyCode.Escape) && _cursorLockedMode)
+            {
+                _cursorLockedMode = false;
+                Cursor.lockState = CursorLockMode.None;
+                Cursor.visible = true;
+            }
+
+            if (!_cursorLockedMode && !Input.GetMouseButton(1))
             {
                 return;
             }
