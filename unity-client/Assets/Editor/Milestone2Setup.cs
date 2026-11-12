@@ -35,33 +35,8 @@ namespace DrillVR.EditorTools
         [MenuItem("DrillVR/Setup Milestone 2 Environment")]
         public static void RunSetup()
         {
-            EnsureMaterialsFolder();
-            LoadOrCreateMaterials();
-            _uiFont = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
-
             var scene = EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Single);
-
-            GameObject buildingRoot = new GameObject("BuildingEnvironment");
-            BuildFloors(buildingRoot.transform);
-            BuildPerimeterAndCorridorWalls(buildingRoot.transform);
-            BuildInteriorDividers(buildingRoot.transform);
-            BuildCeiling(buildingRoot.transform);
-            BuildStairwell(buildingRoot.transform);
-            BuildDoors(buildingRoot.transform);
-            BuildSigns(buildingRoot.transform);
-            BuildProps(buildingRoot.transform);
-            BuildBakedLighting(buildingRoot.transform);
-
-            // Bake NavMesh over all building colliders
-            NavMeshSurface navSurface = buildingRoot.AddComponent<NavMeshSurface>();
-            navSurface.collectObjects = CollectObjects.Children;
-            navSurface.useGeometry = NavMeshCollectGeometry.PhysicsColliders;
-            navSurface.BuildNavMesh();
-
-            BuildPlayerRig();
-            BuildBootstrapAndAudio();
-
-            Lightmapping.giWorkflowMode = Lightmapping.GIWorkflowMode.OnDemand;
+            BuildMilestone2IntoCurrentScene(out _, out _);
 
             EditorSceneManager.SaveScene(scene, ScenePath);
             EditorBuildSettings.scenes = new[]
@@ -81,6 +56,34 @@ namespace DrillVR.EditorTools
                 "3. Press Play: walk with WASD + Right-Mouse look, or Build And Run to check 30+ FPS on phone.",
                 "OK"
             );
+        }
+
+        public static void BuildMilestone2IntoCurrentScene(out GameObject buildingRoot, out GameObject playerRig)
+        {
+            EnsureMaterialsFolder();
+            LoadOrCreateMaterials();
+            _uiFont = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
+
+            buildingRoot = new GameObject("BuildingEnvironment");
+            BuildFloors(buildingRoot.transform);
+            BuildPerimeterAndCorridorWalls(buildingRoot.transform);
+            BuildInteriorDividers(buildingRoot.transform);
+            BuildCeiling(buildingRoot.transform);
+            BuildStairwell(buildingRoot.transform);
+            BuildDoors(buildingRoot.transform);
+            BuildSigns(buildingRoot.transform);
+            BuildProps(buildingRoot.transform);
+            BuildBakedLighting(buildingRoot.transform);
+
+            NavMeshSurface navSurface = buildingRoot.AddComponent<NavMeshSurface>();
+            navSurface.collectObjects = CollectObjects.Children;
+            navSurface.useGeometry = NavMeshCollectGeometry.PhysicsColliders;
+            navSurface.BuildNavMesh();
+
+            playerRig = BuildPlayerRig();
+            BuildBootstrapAndAudio();
+
+            Lightmapping.giWorkflowMode = Lightmapping.GIWorkflowMode.OnDemand;
         }
 
         [MenuItem("DrillVR/Bake Milestone 2 Lighting")]
@@ -445,7 +448,7 @@ namespace DrillVR.EditorTools
             light.color = new Color(1f, 0.96f, 0.88f);
         }
 
-        private static void BuildPlayerRig()
+        private static GameObject BuildPlayerRig()
         {
             GameObject playerRig = new GameObject("PlayerRig");
             playerRig.transform.position = new Vector3(-15.5f, 0f, 0f);
@@ -514,6 +517,8 @@ namespace DrillVR.EditorTools
             SerializedObject fpsSo = new SerializedObject(fpsOverlay);
             fpsSo.FindProperty("fpsText").objectReferenceValue = fpsText;
             fpsSo.ApplyModifiedPropertiesWithoutUndo();
+
+            return playerRig;
         }
 
         private static void BuildBootstrapAndAudio()
