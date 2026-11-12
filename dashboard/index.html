@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>DrillVR — Instructor Dashboard</title>
+  <link rel="stylesheet" href="styles.css" />
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
+</head>
+<body>
+  <header class="topbar">
+    <div>
+      <h1>DrillVR Instructor Dashboard</h1>
+      <p class="subtitle">AI-Driven Mobile VR Emergency Response Training Analytics</p>
+    </div>
+    <div id="userControls" class="hidden">
+      <span id="signedInBadge" class="badge"></span>
+      <button id="refreshBtn" class="btn btn-secondary" type="button">Refresh Data</button>
+      <button id="logoutBtn" class="btn btn-danger" type="button">Sign Out</button>
+    </div>
+  </header>
+
+  <div class="disclaimer">
+    <strong>Educational Prototype Notice:</strong> DrillVR is an academic prototype (no weapons/combat). Simulation scores must not be presented as proof of real-world qualification.
+  </div>
+
+  <main class="container">
+    <!-- Login Section -->
+    <section id="loginSection" class="card login-card">
+      <h2>Instructor Sign In</h2>
+      <form id="loginForm">
+        <label for="apiBaseInput">Backend API URL</label>
+        <input id="apiBaseInput" type="url" value="http://localhost:4000" required />
+
+        <label for="emailInput">Instructor Email</label>
+        <input id="emailInput" type="email" placeholder="instructor@drillvr.edu" required />
+
+        <label for="passwordInput">Password</label>
+        <input id="passwordInput" type="password" placeholder="Password" required />
+
+        <div class="btn-row">
+          <button class="btn btn-primary" type="submit">Sign In</button>
+          <button id="fillDemoBtn" class="btn btn-secondary" type="button">Fill Demo Instructor</button>
+        </div>
+        <p id="loginError" class="error-text" aria-live="polite"></p>
+      </form>
+    </section>
+
+    <!-- Dashboard Section -->
+    <section id="dashboardSection" class="hidden">
+      <div class="grid-two">
+        <!-- Trainee Summary Table -->
+        <div class="card">
+          <div class="card-header">
+            <h2>Trainees Summary</h2>
+            <span class="muted">Click a trainee to inspect sessions &amp; adaptive difficulty</span>
+          </div>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Trainee</th>
+                  <th>Sessions</th>
+                  <th>Avg Score</th>
+                  <th>Best</th>
+                  <th>Avg Mistakes</th>
+                  <th>Weakest Step</th>
+                  <th>Action</th>
+                </tr>
+              </thead>
+              <tbody id="traineesBody"></tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Leaderboard -->
+        <div class="card">
+          <div class="card-header">
+            <h2>Scenario Leaderboard</h2>
+            <span class="muted">Building Emergency Drill</span>
+          </div>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>#</th>
+                  <th>Trainee</th>
+                  <th>Best Score</th>
+                  <th>Avg Score</th>
+                  <th>Fastest (s)</th>
+                </tr>
+              </thead>
+              <tbody id="leaderboardBody"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- Trainee Detail + Chart.js -->
+      <div id="detailCard" class="card hidden">
+        <div class="card-header">
+          <div>
+            <h2 id="detailTitle">Trainee Detail</h2>
+            <p id="detailMeta" class="muted"></p>
+          </div>
+          <span id="difficultyBadge" class="badge"></span>
+        </div>
+
+        <div class="chart-wrap">
+          <canvas id="scoreChart"></canvas>
+        </div>
+
+        <h3>Session History</h3>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Session #</th>
+                <th>Completed</th>
+                <th>Difficulty</th>
+                <th>Score</th>
+                <th>Time (s)</th>
+                <th>Mistakes</th>
+                <th>Evacuated</th>
+                <th>Result</th>
+                <th>Weakest Step</th>
+              </tr>
+            </thead>
+            <tbody id="historyBody"></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script src="app.js"></script>
+</body>
+</html>
