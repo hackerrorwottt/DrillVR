@@ -1,4 +1,6 @@
 using UnityEngine;
+using UnityEngine.EventSystems;
+using UnityEngine.UI;
 
 namespace DrillVR.Player
 {
@@ -48,9 +50,37 @@ namespace DrillVR.Player
         private void Update()
         {
 #if UNITY_EDITOR
+            if (IsTypingInInputField())
+            {
+                return;
+            }
             HandleEditorMouseLook();
             HandleEditorMovement();
 #endif
+        }
+
+        private static bool IsTypingInInputField()
+        {
+            if (EventSystem.current == null || EventSystem.current.currentSelectedGameObject == null)
+            {
+                return false;
+            }
+            InputField field = EventSystem.current.currentSelectedGameObject.GetComponent<InputField>();
+            return field != null && field.isFocused;
+        }
+
+        /// <summary>
+        /// Resets both Transform rotation and cached Editor mouse-look pitch/yaw.
+        /// </summary>
+        public void ResetLook(Vector3 worldEuler)
+        {
+            transform.rotation = Quaternion.Euler(0f, worldEuler.y, 0f);
+            _yaw = worldEuler.y;
+            _pitch = 0f;
+            if (cameraTransform != null)
+            {
+                cameraTransform.localRotation = Quaternion.identity;
+            }
         }
 
         /// <summary>

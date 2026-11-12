@@ -190,10 +190,16 @@ namespace DrillVR.UI
                 prop.ResetItem();
             }
 
+            DrillStepTriggerInteractable[] triggers = FindObjectsOfType<DrillStepTriggerInteractable>(true);
+            foreach (DrillStepTriggerInteractable trig in triggers)
+            {
+                trig.gameObject.SetActive(true);
+            }
+
             if (playerRig != null)
             {
                 playerRig.TeleportTo(spawnPosition);
-                playerRig.transform.rotation = Quaternion.Euler(spawnEuler);
+                playerRig.ResetLook(spawnEuler);
             }
         }
     }
