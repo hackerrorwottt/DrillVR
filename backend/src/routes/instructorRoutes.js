@@ -55,8 +55,8 @@ function createInstructorRouter(pool) {
             avgScore: Number(t.avgScore),
             bestScore: Number(t.bestScore),
             avgMistakes: Number(t.avgMistakes),
-            weakestStep: weak ? weak.stepTitle : 'N/A',
-            weakestStepKey: weak ? weak.stepKey : null,
+            weakestStep: weak && weak.totalStepMistakes > 0 ? weak.stepTitle : 'None',
+            weakestStepKey: weak && weak.totalStepMistakes > 0 ? weak.stepKey : null,
           };
         });
 

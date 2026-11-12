@@ -64,6 +64,7 @@ function createUserRouter(pool) {
 
         const logsBySession = new Map();
         for (const log of logs) {
+          log.completed = Boolean(log.completed);
           if (!logsBySession.has(log.sessionId)) {
             logsBySession.set(log.sessionId, []);
           }

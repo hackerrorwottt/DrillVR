@@ -32,13 +32,23 @@ function createSessionRouter(pool) {
     const stepLogs = Array.isArray(body.stepLogs) ? body.stepLogs : null;
 
     if (
-      (!scenarioCode && !scenarioIdInput) ||
+      (!scenarioCode && (!Number.isInteger(Number(scenarioIdInput)) || Number(scenarioIdInput) <= 0)) ||
       !Number.isFinite(totalScore) ||
       totalScore < 0 ||
       totalScore > 100 ||
+      !isFiniteNonNegative(stepsScore) ||
+      !isFiniteNonNegative(evacuationScore) ||
+      !isFiniteNonNegative(timeBonusScore) ||
+      !isFiniteNonNegative(mistakePenalty) ||
+      mistakePenalty > 999.99 ||
       !isFiniteNonNegative(totalTimeSeconds) ||
       !Number.isInteger(totalMistakes) ||
       totalMistakes < 0 ||
+      !Number.isInteger(casualtiesEvacuated) ||
+      casualtiesEvacuated < 0 ||
+      !Number.isInteger(casualtiesTotal) ||
+      casualtiesTotal < 0 ||
+      casualtiesEvacuated > casualtiesTotal ||
       !Number.isFinite(difficultyMultiplier) ||
       difficultyMultiplier <= 0 ||
       !stepLogs ||
@@ -105,6 +115,7 @@ function createSessionRouter(pool) {
 
       const sessionId = sessionResult.insertId;
 
+      const seenStepIds = new Set();
       for (const entry of stepLogs) {
         const resolvedStepId = entry.stepId
           ? Number(entry.stepId)
@@ -116,6 +127,7 @@ function createSessionRouter(pool) {
         if (
           !resolvedStepId ||
           !stepById.has(resolvedStepId) ||
+          seenStepIds.has(resolvedStepId) ||
           !isFiniteNonNegative(timeSpent) ||
           !Number.isInteger(mistakesInStep) ||
           mistakesInStep < 0
@@ -125,10 +137,11 @@ function createSessionRouter(pool) {
             new AppError(
               400,
               'INVALID_STEP_LOG',
-              `Invalid step log entry (${entry.stepKey || entry.stepId || 'unknown'}); transaction rolled back.`
+              `Invalid or duplicate step log entry (${entry.stepKey || entry.stepId || 'unknown'}); transaction rolled back.`
             )
           );
         }
+        seenStepIds.add(resolvedStepId);
 
         await conn.execute(
           `INSERT INTO session_step_logs (
@@ -167,7 +180,8 @@ function createSessionRouter(pool) {
         typeof req.query.scenarioCode === 'string' && req.query.scenarioCode.trim()
           ? req.query.scenarioCode.trim()
           : 'building_emergency_v1';
-      const limit = Math.min(50, Math.max(1, Number(req.query.limit || 10)));
+      const parsedLimit = Number.parseInt(req.query.limit, 10);
+      const limit = Number.isFinite(parsedLimit) ? Math.min(50, Math.max(1, parsedLimit)) : 10;
 
       const [rows] = await pool.query(
         `SELECT u.id AS userId, u.name, sc.code AS scenarioCode,
