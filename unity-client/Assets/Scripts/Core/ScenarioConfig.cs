@@ -30,6 +30,11 @@ namespace DrillVR.Core
         public float timeLimitSeconds = 300f;
         public float maxSmokeRadius = 11f;
 
+        [Header("Casualty AI & Failure Thresholds")]
+        public float casualtyPanicDistance = 3.5f;
+        public float maxCasualtySmokeTime = 35f;
+        public int maxCasualtiesLostAllowed = 1;
+
         [Header("Assessment Weights (Total = 100%)")]
         [Range(0f, 100f)] public float stepsWeight = 40f;
         [Range(0f, 100f)] public float evacuationWeight = 40f;
