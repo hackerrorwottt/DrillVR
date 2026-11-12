@@ -24,17 +24,8 @@ namespace DrillVR.EditorTools
         [MenuItem("DrillVR/Setup Milestone 3 Interactions")]
         public static void RunSetup()
         {
-            Sprite ringSprite = EnsureReticleRingSprite();
-            Material teleportMat = EnsureTeleportMaterial();
-            Font uiFont = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
-
             var scene = EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Single);
-            Milestone2Setup.BuildMilestone2IntoCurrentScene(out GameObject buildingRoot, out GameObject playerRig);
-
-            GazeInteractor gazeInteractor = ConfigureCameraGazeAndHud(playerRig, ringSprite, uiFont, out Text hoverPrompt, out Text hudStatus);
-            AttachDoorInteractables(buildingRoot.transform);
-            CreateTeleportPoints(playerRig.GetComponent<EditorWalkController>(), teleportMat);
-            CreateWorldSpaceMenus(gazeInteractor, hoverPrompt, hudStatus, uiFont);
+            BuildMilestone3IntoCurrentScene(out _, out _, out _, out _);
 
             EditorSceneManager.SaveScene(scene, ScenePath);
             EditorBuildSettings.scenes = new[]
@@ -55,6 +46,24 @@ namespace DrillVR.EditorTools
                 "- Gaze at green pads to teleport through the building.",
                 "OK"
             );
+        }
+
+        public static void BuildMilestone3IntoCurrentScene(
+            out GameObject buildingRoot,
+            out GameObject playerRig,
+            out GazeInteractor gazeInteractor,
+            out UIManager uiManager)
+        {
+            Sprite ringSprite = EnsureReticleRingSprite();
+            Material teleportMat = EnsureTeleportMaterial();
+            Font uiFont = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
+
+            Milestone2Setup.BuildMilestone2IntoCurrentScene(out buildingRoot, out playerRig);
+
+            gazeInteractor = ConfigureCameraGazeAndHud(playerRig, ringSprite, uiFont, out Text hoverPrompt, out Text hudStatus);
+            AttachDoorInteractables(buildingRoot.transform);
+            CreateTeleportPoints(playerRig.GetComponent<EditorWalkController>(), teleportMat);
+            uiManager = CreateWorldSpaceMenus(gazeInteractor, hoverPrompt, hudStatus, uiFont);
         }
 
         private static Sprite EnsureReticleRingSprite()
@@ -247,7 +256,7 @@ namespace DrillVR.EditorTools
             }
         }
 
-        private static void CreateWorldSpaceMenus(
+        private static UIManager CreateWorldSpaceMenus(
             GazeInteractor gazeInteractor,
             Text hoverPromptText,
             Text hudStatusText,
@@ -302,6 +311,8 @@ namespace DrillVR.EditorTools
             uiSo.FindProperty("hoverPromptText").objectReferenceValue = hoverPromptText;
             uiSo.FindProperty("hudStatusText").objectReferenceValue = hudStatusText;
             uiSo.ApplyModifiedPropertiesWithoutUndo();
+
+            return uiMgr;
         }
 
         private static GameObject CreatePanel(string name, Transform parent, Color bgColor)
