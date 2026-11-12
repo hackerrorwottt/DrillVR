@@ -1,0 +1,145 @@
+{
+  "info": {
+    "name": "DrillVR Backend API",
+    "_postman_id": "d4b2b6b0-6d2c-4c3f-9b8b-drillvr000001",
+    "description": "Postman collection for DrillVR Node.js + Express + MySQL 8 backend (Milestone 7).",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    { "key": "baseUrl", "value": "http://localhost:4000" },
+    { "key": "token", "value": "" },
+    { "key": "instructorToken", "value": "" }
+  ],
+  "item": [
+    {
+      "name": "Health Check",
+      "request": {
+        "method": "GET",
+        "url": "{{baseUrl}}/api/health"
+      }
+    },
+    {
+      "name": "Register Trainee",
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"name\": \"Rohan Verma\",\n  \"email\": \"rohan@drillvr.edu\",\n  \"password\": \"Trainee@123\"\n}"
+        },
+        "url": "{{baseUrl}}/api/auth/register"
+      }
+    },
+    {
+      "name": "Login Trainee (Aarav)",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "const json = pm.response.json();",
+              "if (json.token) pm.collectionVariables.set('token', json.token);"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"email\": \"aarav@drillvr.edu\",\n  \"password\": \"Trainee@123\"\n}"
+        },
+        "url": "{{baseUrl}}/api/auth/login"
+      }
+    },
+    {
+      "name": "Login Instructor",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "const json = pm.response.json();",
+              "if (json.token) pm.collectionVariables.set('instructorToken', json.token);"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"email\": \"instructor@drillvr.edu\",\n  \"password\": \"Instructor@123\"\n}"
+        },
+        "url": "{{baseUrl}}/api/auth/login"
+      }
+    },
+    {
+      "name": "Get Scenarios",
+      "request": {
+        "method": "GET",
+        "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+        "url": "{{baseUrl}}/api/scenarios"
+      }
+    },
+    {
+      "name": "Get Building Drill Steps",
+      "request": {
+        "method": "GET",
+        "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+        "url": "{{baseUrl}}/api/scenarios/building_emergency_v1/steps"
+      }
+    },
+    {
+      "name": "Save Session (Transaction)",
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" },
+          { "key": "Authorization", "value": "Bearer {{token}}" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"scenarioCode\": \"building_emergency_v1\",\n  \"difficultyMultiplier\": 1.0,\n  \"totalScore\": 90,\n  \"stepsScore\": 40,\n  \"evacuationScore\": 40,\n  \"timeBonusScore\": 15,\n  \"mistakePenalty\": 5,\n  \"totalTimeSeconds\": 95,\n  \"totalMistakes\": 1,\n  \"casualtiesEvacuated\": 3,\n  \"casualtiesTotal\": 3,\n  \"passed\": true,\n  \"weakestStepKey\": \"equipment_selection\",\n  \"stepLogs\": [\n    { \"stepKey\": \"briefing\", \"timeSpentSeconds\": 10, \"mistakesInStep\": 0, \"completed\": true },\n    { \"stepKey\": \"assess_situation\", \"timeSpentSeconds\": 15, \"mistakesInStep\": 0, \"completed\": true },\n    { \"stepKey\": \"equipment_selection\", \"timeSpentSeconds\": 20, \"mistakesInStep\": 1, \"completed\": true },\n    { \"stepKey\": \"search_casualties\", \"timeSpentSeconds\": 22, \"mistakesInStep\": 0, \"completed\": true },\n    { \"stepKey\": \"evacuate_safe_route\", \"timeSpentSeconds\": 18, \"mistakesInStep\": 0, \"completed\": true },\n    { \"stepKey\": \"report_command_post\", \"timeSpentSeconds\": 10, \"mistakesInStep\": 0, \"completed\": true },\n    { \"stepKey\": \"debrief\", \"timeSpentSeconds\": 0, \"mistakesInStep\": 0, \"completed\": true }\n  ]\n}"
+        },
+        "url": "{{baseUrl}}/api/sessions"
+      }
+    },
+    {
+      "name": "Get My History",
+      "request": {
+        "method": "GET",
+        "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+        "url": "{{baseUrl}}/api/users/me/history"
+      }
+    },
+    {
+      "name": "Get My Adaptive Difficulty",
+      "request": {
+        "method": "GET",
+        "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+        "url": "{{baseUrl}}/api/users/me/difficulty"
+      }
+    },
+    {
+      "name": "Get Leaderboard",
+      "request": {
+        "method": "GET",
+        "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+        "url": "{{baseUrl}}/api/leaderboard?scenarioCode=building_emergency_v1&limit=10"
+      }
+    },
+    {
+      "name": "Instructor Trainees Summary",
+      "request": {
+        "method": "GET",
+        "header": [{ "key": "Authorization", "value": "Bearer {{instructorToken}}" }],
+        "url": "{{baseUrl}}/api/instructor/trainees/summary"
+      }
+    }
+  ]
+}
