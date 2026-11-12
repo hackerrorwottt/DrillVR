@@ -1,0 +1,108 @@
+using UnityEngine;
+
+namespace DrillVR.Player
+{
+    /// <summary>
+    /// Allows walking the entire building layout in Unity Editor Play Mode using WASD/Arrows
+    /// and Right-Mouse-Button look, and provides a safe TeleportTo helper for VR comfort.
+    /// </summary>
+    [RequireComponent(typeof(CharacterController))]
+    public class EditorWalkController : MonoBehaviour
+    {
+        [Header("References")]
+        [SerializeField] private Transform cameraTransform;
+
+        [Header("Editor Walk Settings")]
+        [SerializeField] private float walkSpeed = 3.5f;
+        [SerializeField] private float mouseSensitivity = 2.0f;
+        [SerializeField] private float gravity = -9.81f;
+
+        private CharacterController _controller;
+        private float _verticalVelocity;
+        private float _yaw;
+        private float _pitch;
+
+        private void Awake()
+        {
+            _controller = GetComponent<CharacterController>();
+            if (cameraTransform == null && Camera.main != null)
+            {
+                cameraTransform = Camera.main.transform;
+            }
+        }
+
+        private void Start()
+        {
+            _yaw = transform.eulerAngles.y;
+            if (cameraTransform != null)
+            {
+                _pitch = cameraTransform.localEulerAngles.x;
+                if (_pitch > 180f)
+                {
+                    _pitch -= 360f;
+                }
+            }
+        }
+
+        private void Update()
+        {
+#if UNITY_EDITOR
+            HandleEditorMouseLook();
+            HandleEditorMovement();
+#endif
+        }
+
+        /// <summary>
+        /// Safely teleports the player rig to a target floor position without sudden camera motion.
+        /// </summary>
+        public void TeleportTo(Vector3 targetFloorPosition)
+        {
+            if (_controller == null)
+            {
+                transform.position = targetFloorPosition;
+                return;
+            }
+
+            // CharacterController must be disabled briefly before setting position directly.
+            _controller.enabled = false;
+            transform.position = targetFloorPosition;
+            _verticalVelocity = 0f;
+            _controller.enabled = true;
+        }
+
+        private void HandleEditorMouseLook()
+        {
+            if (!Input.GetMouseButton(1))
+            {
+                return;
+            }
+
+            _yaw += Input.GetAxis("Mouse X") * mouseSensitivity;
+            _pitch -= Input.GetAxis("Mouse Y") * mouseSensitivity;
+            _pitch = Mathf.Clamp(_pitch, -80f, 80f);
+
+            transform.rotation = Quaternion.Euler(0f, _yaw, 0f);
+            if (cameraTransform != null)
+            {
+                cameraTransform.localRotation = Quaternion.Euler(_pitch, 0f, 0f);
+            }
+        }
+
+        private void HandleEditorMovement()
+        {
+            float horizontal = Input.GetAxisRaw("Horizontal");
+            float vertical = Input.GetAxisRaw("Vertical");
+
+            Vector3 move = (transform.right * horizontal + transform.forward * vertical).normalized;
+
+            if (_controller.isGrounded && _verticalVelocity < 0f)
+            {
+                _verticalVelocity = -1f;
+            }
+
+            _verticalVelocity += gravity * Time.deltaTime;
+            Vector3 velocity = move * walkSpeed + Vector3.up * _verticalVelocity;
+            _controller.Move(velocity * Time.deltaTime);
+        }
+    }
+}
