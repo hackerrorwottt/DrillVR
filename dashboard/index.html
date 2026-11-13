@@ -3,136 +3,1134 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>DrillVR — Instructor Dashboard</title>
+  <title>DrillVR — AI-Driven Mobile VR Emergency Response Training Platform</title>
+  <meta name="description" content="Enterprise analytics and instructor command dashboard for live building emergency response VR drills." />
   <link rel="stylesheet" href="styles.css" />
+  <!-- Chart.js for data visualization -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
+  <!-- Three.js 3D Engine for Live Emergency Simulation -->
+  <script src="libs/three.min.js"></script>
+  <script src="js/simulation3d.js"></script>
 </head>
-<body>
-  <header class="topbar">
-    <div>
-      <h1>DrillVR Instructor Dashboard</h1>
-      <p class="subtitle">AI-Driven Mobile VR Emergency Response Training Analytics</p>
-    </div>
-    <div id="userControls" class="hidden">
-      <span id="signedInBadge" class="badge"></span>
-      <button id="refreshBtn" class="btn btn-secondary" type="button">Refresh Data</button>
-      <button id="logoutBtn" class="btn btn-danger" type="button">Sign Out</button>
-    </div>
-  </header>
+<body class="theme-dark">
+  <!-- Toast Notification Container -->
+  <div id="toastContainer" class="toast-container" aria-live="polite"></div>
 
-  <div class="disclaimer">
-    <strong>Educational Prototype Notice:</strong> DrillVR is an academic prototype (no weapons/combat). Simulation scores must not be presented as proof of real-world qualification.
+  <!-- Educational Prototype Notice Banner -->
+  <div class="prototype-banner">
+    <div class="banner-content">
+      <span class="badge-tag">MHA 2023 SPEC</span>
+      <p><strong>Educational Prototype:</strong> DrillVR is an academic simulation for building emergency response drills (no combat/weapons). Scores reflect simulation metrics only.</p>
+    </div>
+    <div class="banner-status">
+      <span class="status-indicator live-pulse"></span>
+      <span id="globalApiStatus">Checking API...</span>
+    </div>
   </div>
 
-  <main class="container">
-    <!-- Login Section -->
-    <section id="loginSection" class="card login-card">
-      <h2>Instructor Sign In</h2>
-      <form id="loginForm">
-        <label for="apiBaseInput">Backend API URL</label>
-        <input id="apiBaseInput" type="url" value="http://localhost:4000" required />
-
-        <label for="emailInput">Instructor Email</label>
-        <input id="emailInput" type="email" placeholder="instructor@drillvr.edu" required />
-
-        <label for="passwordInput">Password</label>
-        <input id="passwordInput" type="password" placeholder="Password" required />
-
-        <div class="btn-row">
-          <button class="btn btn-primary" type="submit">Sign In</button>
-          <button id="fillDemoBtn" class="btn btn-secondary" type="button">Fill Demo Instructor</button>
-        </div>
-        <p id="loginError" class="error-text" aria-live="polite"></p>
-      </form>
-    </section>
-
-    <!-- Dashboard Section -->
-    <section id="dashboardSection" class="hidden">
-      <div class="grid-two">
-        <!-- Trainee Summary Table -->
-        <div class="card">
-          <div class="card-header">
-            <h2>Trainees Summary</h2>
-            <span class="muted">Click a trainee to inspect sessions &amp; adaptive difficulty</span>
-          </div>
-          <div class="table-wrap">
-            <table>
-              <thead>
-                <tr>
-                  <th>Trainee</th>
-                  <th>Sessions</th>
-                  <th>Avg Score</th>
-                  <th>Best</th>
-                  <th>Avg Mistakes</th>
-                  <th>Weakest Step</th>
-                  <th>Action</th>
-                </tr>
-              </thead>
-              <tbody id="traineesBody"></tbody>
-            </table>
+  <!-- ========================================================================= -->
+  <!-- 1. AUTHENTICATION / LOGIN SCREEN (SPLIT-SCREEN DESIGN)                   -->
+  <!-- ========================================================================= -->
+  <section id="loginScreen" class="auth-screen">
+    <div class="auth-container">
+      
+      <!-- Left Panel: Brand & Visual Storytelling -->
+      <div class="auth-visual-panel">
+        <div class="auth-visual-overlay"></div>
+        <div class="auth-brand">
+          <div class="brand-logo">
+            <svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <rect width="32" height="32" rx="8" fill="url(#brandGrad)" />
+              <path d="M16 6L24 11V21L16 26L8 21V11L16 6Z" stroke="#F8FAFC" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              <path d="M16 11V21" stroke="#38BDF8" stroke-width="2" stroke-linecap="round"/>
+              <path d="M11 13.5L21 18.5" stroke="#22D3EE" stroke-width="1.5" stroke-linecap="round"/>
+              <circle cx="16" cy="16" r="3" fill="#38BDF8" />
+              <defs>
+                <linearGradient id="brandGrad" x1="0" y1="0" x2="32" y2="32" gradientUnits="userSpaceOnUse">
+                  <stop stop-color="#0284C7"/>
+                  <stop offset="1" stop-color="#0369A1"/>
+                </linearGradient>
+              </defs>
+            </svg>
+            <div class="brand-text">
+              <span class="brand-name">Drill<span class="highlight">VR</span></span>
+              <span class="brand-version">v2.4 Enterprise</span>
+            </div>
           </div>
         </div>
 
-        <!-- Leaderboard -->
-        <div class="card">
-          <div class="card-header">
-            <h2>Scenario Leaderboard</h2>
-            <span class="muted">Building Emergency Drill</span>
+        <div class="auth-hero-copy">
+          <div class="hero-pill">
+            <span class="hero-dot"></span>
+            <span>Ministry of Home Affairs 2023 Challenge</span>
           </div>
-          <div class="table-wrap">
-            <table>
-              <thead>
-                <tr>
-                  <th>#</th>
-                  <th>Trainee</th>
-                  <th>Best Score</th>
-                  <th>Avg Score</th>
-                  <th>Fastest (s)</th>
-                </tr>
-              </thead>
-              <tbody id="leaderboardBody"></tbody>
-            </table>
+          <h2>Live Emergency Drill Intelligence &amp; Autonomous AI Training</h2>
+          <p>
+            Standardizing building evacuation, hazard triage, and casualty rescue using consumer mobile VR headsets paired with millisecond-precision relational telemetry.
+          </p>
+
+          <div class="auth-feature-grid">
+            <div class="feature-item">
+              <div class="feature-icon">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+              </div>
+              <div class="feature-info">
+                <h4>Cardboard XR Client</h4>
+                <p>30-60 FPS mobile stereoscopic render with gaze-dwell locomotion</p>
+              </div>
+            </div>
+
+            <div class="feature-item">
+              <div class="feature-icon">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+              </div>
+              <div class="feature-info">
+                <h4>NavMesh AI FSM</h4>
+                <p>Civilian casualties react to smoke hazards and follow rescue paths</p>
+              </div>
+            </div>
+
+            <div class="feature-item">
+              <div class="feature-icon">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/><line x1="4" y1="22" x2="4" y2="15"/></svg>
+              </div>
+              <div class="feature-info">
+                <h4>Rolling AI Difficulty</h4>
+                <p>5-session mistake tracking dynamically scales smoke growth rates</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="auth-visual-footer">
+          <div class="compliance-badge">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+            <span>MySQL 8 Relational 3NF • Atomic Transactions • JWT &amp; bcrypt</span>
           </div>
         </div>
       </div>
 
-      <!-- Trainee Detail + Chart.js -->
-      <div id="detailCard" class="card hidden">
-        <div class="card-header">
-          <div>
-            <h2 id="detailTitle">Trainee Detail</h2>
-            <p id="detailMeta" class="muted"></p>
+      <!-- Right Panel: Elegant Authentication Card -->
+      <div class="auth-form-panel">
+        <div class="form-wrapper">
+          <div class="form-header">
+            <h3>Instructor Sign In</h3>
+            <p>Enter your authorized credentials to access cohort telemetry and scenario metrics.</p>
           </div>
-          <span id="difficultyBadge" class="badge"></span>
-        </div>
 
-        <div class="chart-wrap">
-          <canvas id="scoreChart"></canvas>
-        </div>
+          <form id="loginForm" class="modern-form" novalidate>
+            <!-- Email Input -->
+            <div class="form-group">
+              <label for="emailInput">Instructor Email</label>
+              <div class="input-with-icon">
+                <svg class="input-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>
+                <input id="emailInput" type="email" placeholder="instructor@drillvr.edu" required autocomplete="email" />
+              </div>
+            </div>
 
-        <h3>Session History</h3>
-        <div class="table-wrap">
-          <table>
-            <thead>
-              <tr>
-                <th>Session #</th>
-                <th>Completed</th>
-                <th>Difficulty</th>
-                <th>Score</th>
-                <th>Time (s)</th>
-                <th>Mistakes</th>
-                <th>Evacuated</th>
-                <th>Result</th>
-                <th>Weakest Step</th>
-              </tr>
-            </thead>
-            <tbody id="historyBody"></tbody>
-          </table>
+            <!-- Password Input with Toggle -->
+            <div class="form-group">
+              <div class="label-row">
+                <label for="passwordInput">Password</label>
+                <button type="button" id="togglePasswordBtn" class="link-btn text-muted" title="Toggle password visibility">
+                  <span id="pwToggleText">Show</span>
+                </button>
+              </div>
+              <div class="input-with-icon">
+                <svg class="input-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect width="18" height="11" x="3" y="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+                <input id="passwordInput" type="password" placeholder="••••••••" required autocomplete="current-password" />
+              </div>
+            </div>
+
+            <!-- Expandable Backend API Configuration -->
+            <div class="api-accordion">
+              <button type="button" id="toggleApiConfigBtn" class="accordion-trigger">
+                <span class="trigger-left">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+                  <span>Backend Endpoint: <code id="apiDisplayUrl">http://localhost:4000</code></span>
+                </span>
+                <span id="accordionArrow" class="arrow">▾</span>
+              </button>
+              <div id="apiConfigBody" class="accordion-body hidden">
+                <label for="apiBaseInput">Express API Base URL</label>
+                <div class="input-row">
+                  <input id="apiBaseInput" type="url" value="http://localhost:4000" />
+                  <button type="button" id="saveApiBaseBtn" class="btn btn-secondary btn-sm">Save</button>
+                </div>
+              </div>
+            </div>
+
+            <!-- Error Notification Banner -->
+            <div id="loginError" class="alert-box alert-error hidden" role="alert"></div>
+
+            <!-- Actions Row -->
+            <div class="form-actions">
+              <button id="signInBtn" type="submit" class="btn btn-primary btn-block">
+                <span class="btn-text">Sign In to Dashboard</span>
+                <span class="btn-spinner hidden"></span>
+              </button>
+              
+              <div class="auth-divider">
+                <span>OR PREVIEW DEMO</span>
+              </div>
+
+              <div class="demo-actions">
+                <button type="button" id="fillDemoBtn" class="btn btn-secondary btn-block">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+                  <span>Fill Seeded Credentials</span>
+                </button>
+                
+                <button type="button" id="previewDemoBtn" class="btn btn-success-glow btn-block">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+                  <span>Instant Demo Preview (No Backend Needed)</span>
+                </button>
+              </div>
+            </div>
+          </form>
+
+          <div class="form-footer">
+            <p class="muted">Default test accounts: <code>instructor@drillvr.edu</code> / <code>Instructor@123</code></p>
+          </div>
         </div>
       </div>
-    </section>
-  </main>
 
+    </div>
+  </section>
+
+  <!-- ========================================================================= -->
+  <!-- 2. MAIN APPLICATION SHELL (AFTER SIGN IN)                                 -->
+  <!-- ========================================================================= -->
+  <div id="dashboardApp" class="dashboard-shell hidden">
+    
+    <!-- Left Navigation Sidebar -->
+    <aside id="sidebar" class="sidebar">
+      <div class="sidebar-header">
+        <div class="brand-badge">
+          <svg width="24" height="24" viewBox="0 0 32 32" fill="none">
+            <rect width="32" height="32" rx="6" fill="#0284C7"/>
+            <path d="M16 6L24 11V21L16 26L8 21V11L16 6Z" stroke="#F8FAFC" stroke-width="2"/>
+            <circle cx="16" cy="16" r="3" fill="#38BDF8"/>
+          </svg>
+          <div class="brand-meta">
+            <span class="logo-title">Drill<span class="highlight">VR</span></span>
+            <span class="logo-sub">Command Center</span>
+          </div>
+        </div>
+        <button id="sidebarCollapseBtn" class="icon-btn" title="Toggle Sidebar">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+        </button>
+      </div>
+
+      <!-- Navigation Menu Items -->
+      <nav class="sidebar-nav">
+        <div class="nav-group-label">MAIN NAVIGATION</div>
+        <ul class="nav-list">
+          <li class="nav-item">
+            <button class="nav-link active" data-view="overview">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect width="7" height="9" x="3" y="3" rx="1"/><rect width="7" height="5" x="14" y="3" rx="1"/><rect width="7" height="9" x="14" y="12" rx="1"/><rect width="7" height="5" x="3" y="16" rx="1"/></svg>
+              <span>Overview</span>
+            </button>
+          </li>
+          <li class="nav-item">
+            <button class="nav-link" data-view="simulation">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></svg>
+              <span>Live 3D Simulation</span>
+              <span class="nav-badge pulse" style="background: rgba(56, 189, 248, 0.2); color: #38bdf8; border: 1px solid rgba(56, 189, 248, 0.4);">LIVE 3D</span>
+            </button>
+          </li>
+          <li class="nav-item">
+            <button class="nav-link" data-view="sessions">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+              <span>Training Sessions</span>
+              <span id="sessionCountBadge" class="nav-badge">20</span>
+            </button>
+          </li>
+          <li class="nav-item">
+            <button class="nav-link" data-view="trainees">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+              <span>Trainee Management</span>
+            </button>
+          </li>
+          <li class="nav-item">
+            <button class="nav-link" data-view="analytics">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+              <span>Simulation Analytics</span>
+            </button>
+          </li>
+          <li class="nav-item">
+            <button class="nav-link" data-view="scenarios">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/></svg>
+              <span>Scenario Library</span>
+            </button>
+          </li>
+          <li class="nav-item">
+            <button class="nav-link" data-view="reports">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+              <span>Performance Reports</span>
+            </button>
+          </li>
+        </ul>
+
+        <div class="nav-group-label">PREFERENCES</div>
+        <ul class="nav-list">
+          <li class="nav-item">
+            <button class="nav-link" data-view="settings">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+              <span>Platform Settings</span>
+            </button>
+          </li>
+        </ul>
+      </nav>
+
+      <!-- Sidebar Footer: User Card & Sign Out -->
+      <div class="sidebar-footer">
+        <div class="user-card">
+          <div class="user-avatar" id="userAvatarText">VS</div>
+          <div class="user-info">
+            <span id="userNameText" class="user-name">Dr. Vikram Sharma</span>
+            <span id="userRoleBadge" class="user-role">Lead Instructor</span>
+          </div>
+          <button id="logoutBtn" class="logout-btn" title="Sign Out">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+          </button>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Main Content Area -->
+    <div class="content-wrapper">
+      
+      <!-- Top Navigation Header -->
+      <header class="top-nav">
+        <div class="nav-left">
+          <button id="mobileMenuBtn" class="icon-btn mobile-only" title="Open Menu">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+          </button>
+          
+          <div class="breadcrumbs">
+            <span class="crumb-root">Platform</span>
+            <span class="crumb-separator">/</span>
+            <span id="currentViewBreadcrumb" class="crumb-active">Overview</span>
+          </div>
+        </div>
+
+        <div class="nav-center">
+          <div class="search-box">
+            <svg class="search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+            <input id="globalSearchInput" type="text" placeholder="Search trainees, sessions, telemetry... (⌘K)" />
+            <kbd class="shortcut-tag">⌘K</kbd>
+          </div>
+        </div>
+
+        <div class="nav-right">
+          <!-- Connection Mode Pill -->
+          <div id="connectionPill" class="connection-pill demo-mode">
+            <span class="pill-dot"></span>
+            <span id="connectionText">Demo Mode</span>
+          </div>
+
+          <!-- Refresh Button -->
+          <button id="refreshDataBtn" class="icon-btn" title="Refresh Live Telemetry">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"/></svg>
+          </button>
+
+          <!-- Notification Bell -->
+          <div class="notification-wrap">
+            <button id="notificationBtn" class="icon-btn" title="Notifications">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+              <span class="unread-dot"></span>
+            </button>
+            <div id="notificationDropdown" class="dropdown-menu hidden">
+              <div class="dropdown-header">
+                <h4>System Notifications</h4>
+                <span class="badge-tag">3 New</span>
+              </div>
+              <ul class="dropdown-list">
+                <li class="notification-item">
+                  <span class="notif-badge alert-success">SYNC</span>
+                  <div class="notif-content">
+                    <p>Aarav completed Run #20 with Grade S (98.0 pts)</p>
+                    <span class="notif-time">12 mins ago</span>
+                  </div>
+                </li>
+                <li class="notification-item">
+                  <span class="notif-badge alert-warning">AI ADAPT</span>
+                  <div class="notif-content">
+                    <p>Kabir shifted to EASIER tier (0.70x hazard speed)</p>
+                    <span class="notif-time">45 mins ago</span>
+                  </div>
+                </li>
+                <li class="notification-item">
+                  <span class="notif-badge alert-info">BACKEND</span>
+                  <div class="notif-content">
+                    <p>MySQL 3NF schema audit completed with zero orphans</p>
+                    <span class="notif-time">2 hours ago</span>
+                  </div>
+                </li>
+              </ul>
+            </div>
+          </div>
+
+          <!-- Simulate Live Run Trigger -->
+          <button id="simulateLiveRunBtn" class="btn btn-success-glow btn-sm" title="Simulate a live incoming VR drill run">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+            <span>+ Simulate Live Run</span>
+          </button>
+
+          <!-- Launch Drill Modal Trigger -->
+          <button id="launchSimBtn" class="btn btn-primary btn-sm">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+            <span>Launch Simulation</span>
+          </button>
+        </div>
+      </header>
+
+      <!-- Scrollable Main Container -->
+      <main class="main-body">
+        
+        <!-- ================================================================= -->
+        <!-- VIEW 1: OVERVIEW DASHBOARD                                        -->
+        <!-- ================================================================= -->
+        <section id="view-overview" class="view-panel active">
+          
+          <!-- Section Title & Filter Bar -->
+          <div class="view-header">
+            <div>
+              <h2 class="section-title">Cohort Overview &amp; Live Telemetry</h2>
+              <p class="section-subtitle">Real-time simulation analytics for Building Emergency Response Drill (Scenario <code>building_emergency_v1</code>)</p>
+            </div>
+            <div class="view-actions">
+              <span class="date-chip">Last 30 Days</span>
+              <button id="exportCsvBtn" class="btn btn-secondary btn-sm">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                <span>Export CSV</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- 4 Executive KPI Cards -->
+          <div class="kpi-grid">
+            <div class="kpi-card">
+              <div class="kpi-header">
+                <span class="kpi-title">TOTAL ACTIVE TRAINEES</span>
+                <span class="kpi-icon icon-cyan">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+                </span>
+              </div>
+              <div class="kpi-value" id="kpiTraineesCount">4</div>
+              <div class="kpi-meta">
+                <span class="trend trend-up">100% Active</span>
+                <span class="meta-label">Assigned to emergency drill</span>
+              </div>
+            </div>
+
+            <div class="kpi-card">
+              <div class="kpi-header">
+                <span class="kpi-title">SESSIONS COMPLETED</span>
+                <span class="kpi-icon icon-blue">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                </span>
+              </div>
+              <div class="kpi-value" id="kpiSessionsCount">20</div>
+              <div class="kpi-meta">
+                <span class="trend trend-neutral">140 Step Logs</span>
+                <span class="meta-label">Stored in 3NF MySQL</span>
+              </div>
+            </div>
+
+            <div class="kpi-card">
+              <div class="kpi-header">
+                <span class="kpi-title">COHORT AVG SCORE</span>
+                <span class="kpi-icon icon-emerald">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+                </span>
+              </div>
+              <div class="kpi-value"><span id="kpiAvgScore">78.6</span><span class="kpi-unit">/100</span></div>
+              <div class="kpi-meta">
+                <span class="trend trend-up">+4.2%</span>
+                <span class="meta-label">vs baseline qualification</span>
+              </div>
+            </div>
+
+            <div class="kpi-card">
+              <div class="kpi-header">
+                <span class="kpi-title">COHORT AVG DURATION</span>
+                <span class="kpi-icon icon-purple">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+                </span>
+              </div>
+              <div class="kpi-value"><span id="kpiAvgDuration">172.5</span><span class="kpi-unit">s</span></div>
+              <div class="kpi-meta">
+                <span class="trend trend-up">Target: 180s</span>
+                <span class="meta-label">Evacuation par standard</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Charts Grid (2 columns) -->
+          <div class="charts-grid">
+            
+            <!-- Left Chart: Score & Mistakes Trajectory -->
+            <div class="chart-card">
+              <div class="chart-header">
+                <div>
+                  <h3 class="chart-title">Training Performance &amp; Mistake Trends</h3>
+                  <p class="chart-subtitle">Dual-axis telemetry curve across historical training runs</p>
+                </div>
+                <div class="chart-legend-custom">
+                  <span class="legend-item"><span class="legend-dot color-score"></span> Score (0-100)</span>
+                  <span class="legend-item"><span class="legend-dot color-mistake"></span> Mistakes</span>
+                </div>
+              </div>
+              <div class="chart-wrapper">
+                <canvas id="mainScoreChart"></canvas>
+                <!-- Pure SVG Fallback rendered if Chart.js is not loaded -->
+                <div id="chartFallback" class="fallback-chart hidden"></div>
+              </div>
+            </div>
+
+            <!-- Right Chart: Step Bottleneck Breakdown -->
+            <div class="chart-card">
+              <div class="chart-header">
+                <div>
+                  <h3 class="chart-title">Step Duration &amp; Bottleneck Analysis</h3>
+                  <p class="chart-subtitle">Average time spent per drill stage vs expected par time</p>
+                </div>
+                <span class="badge-tag">7 Drill Stages</span>
+              </div>
+              <div class="chart-wrapper">
+                <canvas id="stepDurationChart"></canvas>
+              </div>
+            </div>
+
+          </div>
+
+          <!-- Two Column Layout: Trainees Summary & Real-Time Leaderboard -->
+          <div class="tables-grid">
+            
+            <!-- Left: Trainees Roster Table -->
+            <div class="data-card">
+              <div class="card-head">
+                <div>
+                  <h3 class="card-title">Trainee Roster &amp; Adaptive AI Tiers</h3>
+                  <p class="card-subtitle">Click <strong>Inspect</strong> to view deep-dive telemetry and 5-session calibration</p>
+                </div>
+                <div class="table-search">
+                  <input id="traineeFilterInput" type="text" placeholder="Filter trainees..." />
+                </div>
+              </div>
+
+              <div class="table-responsive">
+                <table class="data-table">
+                  <thead>
+                    <tr>
+                      <th>Trainee</th>
+                      <th class="text-center">Drills</th>
+                      <th class="text-right">Avg Score</th>
+                      <th class="text-right">Best Score</th>
+                      <th class="text-center">Avg Mistakes</th>
+                      <th>Weakest Step</th>
+                      <th>Next AI Tier</th>
+                      <th class="text-right">Action</th>
+                    </tr>
+                  </thead>
+                  <tbody id="traineesTableBody">
+                    <!-- Populated dynamically via app.js -->
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            <!-- Right: Real-time Leaderboard & Recent Activity -->
+            <div class="side-widgets">
+              
+              <!-- Leaderboard Card -->
+              <div class="data-card">
+                <div class="card-head">
+                  <div>
+                    <h3 class="card-title">Top Performance Leaderboard</h3>
+                    <p class="card-subtitle">Ranked by highest average score</p>
+                  </div>
+                  <span class="badge-tag">Cohort Podium</span>
+                </div>
+
+                <div class="leaderboard-list" id="leaderboardList">
+                  <!-- Populated dynamically via app.js -->
+                </div>
+              </div>
+
+              <!-- Recent Activity Feed -->
+              <div class="data-card">
+                <div class="card-head">
+                  <h3 class="card-title">Live Simulation Activity</h3>
+                  <span class="live-dot-green"></span>
+                </div>
+                <ul class="activity-timeline" id="recentActivityList">
+                  <!-- Populated dynamically via app.js -->
+                </ul>
+              </div>
+
+            </div>
+
+          </div>
+
+          <!-- Trainee Detailed Inspector Panel (Interactive) -->
+          <div id="traineeDetailDrawer" class="detail-drawer hidden">
+            <div class="drawer-header">
+              <div class="drawer-user-meta">
+                <div class="user-big-avatar" id="drawerAvatar">AM</div>
+                <div>
+                  <div class="title-row">
+                    <h3 id="drawerName" class="drawer-title">Aarav Mehta</h3>
+                    <span id="drawerTierBadge" class="tier-pill tier-harder">HARDER (1.35x)</span>
+                  </div>
+                  <p id="drawerMeta" class="drawer-subtitle">aarav@drillvr.edu • 5 recorded sessions • Avg Mistakes: 1.2</p>
+                </div>
+              </div>
+              <button id="closeDrawerBtn" class="icon-btn" title="Close Panel">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+              </button>
+            </div>
+
+            <div class="drawer-body">
+              <div class="drawer-ai-advice" id="drawerAiAdvice">
+                <strong>Adaptive AI Evaluation:</strong> High performer with minimal protocol violations. Smoke spread multiplier set to <code>1.35x</code> for increased stress simulation.
+              </div>
+
+              <!-- Session History Table -->
+              <div class="history-section">
+                <div class="history-title-row">
+                  <h4>Recorded Sessions &amp; Step Logs</h4>
+                  <span class="badge-tag">MySQL 3NF Linked</span>
+                </div>
+                <div class="table-responsive">
+                  <table class="data-table text-sm">
+                    <thead>
+                      <tr>
+                        <th>Run ID</th>
+                        <th>Completed</th>
+                        <th>Hazard Mult</th>
+                        <th class="text-right">Score</th>
+                        <th class="text-right">Duration</th>
+                        <th class="text-center">Mistakes</th>
+                        <th class="text-center">Casualties</th>
+                        <th class="text-center">Status</th>
+                        <th>Weakest Step</th>
+                      </tr>
+                    </thead>
+                    <tbody id="drawerSessionsBody">
+                      <!-- Populated dynamically -->
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </section>
+
+        <!-- ================================================================= -->
+        <!-- VIEW 2: LIVE 3D SIMULATION (DIGITAL TWIN & UNITY WEBGL)           -->
+        <!-- ================================================================= -->
+        <section id="view-simulation" class="view-panel hidden">
+          <div class="view-header">
+            <div>
+              <h2 class="section-title">Live 3D Simulation &amp; Digital Twin</h2>
+              <p class="section-subtitle">Real-time building drill simulation replicating Unity 3D Milestone 2–8 geometry, hazards, and casualty AI.</p>
+            </div>
+            <div class="header-actions">
+              <span id="simLockBadge" class="badge-tag text-cyan">CLICK TO AIM (Press L to lock)</span>
+              <button id="simToggleCameraBtn" class="btn btn-secondary btn-sm" onclick="window.DrillVRBridge && window.DrillVRBridge.toggleCamera()">
+                Overhead Tactical (T)
+              </button>
+              <button id="simFullscreenBtn" class="btn btn-secondary btn-sm" onclick="document.getElementById('simCanvasContainer').requestFullscreen()">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"/></svg>
+                <span>Fullscreen</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Simulation Quick Control Header -->
+          <div class="sim-control-bar">
+            <div class="sim-control-group">
+              <label class="text-xs text-muted">TRAINEE PROFILE:</label>
+              <select id="simTraineeSelect" class="form-input text-xs" style="width: auto; padding: 6px 10px;" onchange="window.DrillVRBridge && window.DrillVRBridge.setTrainee(this.options[this.selectedIndex].text.split(' (')[0], this.value)">
+                <option value="diya@drillvr.edu">Diya Sharma (diya@drillvr.edu - Normal)</option>
+                <option value="aarav@drillvr.edu">Aarav Patel (aarav@drillvr.edu - Harder)</option>
+                <option value="kabir@drillvr.edu">Kabir Verma (kabir@drillvr.edu - Easier)</option>
+                <option value="demo@drillvr.edu">NDRF Evaluator (Interactive Sandbox)</option>
+              </select>
+
+              <label class="text-xs text-muted ml-2">AI DIFFICULTY:</label>
+              <select id="simDifficultySelect" class="form-input text-xs" style="width: auto; padding: 6px 10px;" onchange="window.DrillVRBridge && window.DrillVRBridge.setDifficulty(this.value)">
+                <option value="normal">Normal (1.00x)</option>
+                <option value="harder">Harder (1.35x)</option>
+                <option value="easier">Easier (0.70x)</option>
+              </select>
+            </div>
+
+            <div class="sim-control-group">
+              <button id="simStartBtn" class="btn btn-success-glow btn-sm" onclick="window.DrillVRBridge && window.DrillVRBridge.start()">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+                <span>Start Drill</span>
+              </button>
+              <button id="simPauseBtn" class="btn btn-secondary btn-sm" onclick="window.DrillVRBridge && window.DrillVRBridge.pause()">
+                <span>Pause</span>
+              </button>
+              <button id="simResetBtn" class="btn btn-secondary btn-sm" onclick="window.DrillVRBridge && window.DrillVRBridge.reset()">
+                <span>Reset</span>
+              </button>
+              <button id="simSyncDbBtn" class="btn btn-secondary btn-sm" onclick="window.DrillVRBridge && window.DrillVRBridge.submitTestSessionExplicit()">
+                <span>Record Test Session</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Main Simulation Grid -->
+          <div class="sim-grid-layout">
+            <!-- 3D Canvas Viewport -->
+            <div>
+              <div id="simCanvasContainer" class="sim-viewport-container">
+                <!-- Smoke Hazard Warning Banner -->
+                <div id="simSmokeAlert" class="sim-smoke-banner hidden">
+                  DANGER: Smoke Inhalation Warning!
+                </div>
+
+                <!-- VR Gaze Reticle & Dwell Countdown -->
+                <div class="sim-reticle-wrap">
+                  <div class="reticle-center-dot"></div>
+                  <svg class="sim-reticle-svg" viewBox="0 0 44 44">
+                    <circle class="reticle-bg" cx="22" cy="22" r="20" />
+                    <circle id="reticleDwellProgress" class="reticle-progress" cx="22" cy="22" r="20" />
+                  </svg>
+                </div>
+
+                <!-- Interaction Prompt Tooltip -->
+                <div id="simInteractionPrompt" class="sim-prompt-box hidden">
+                  Target Object
+                </div>
+
+                <!-- Bottom Telemetry HUD Overlay -->
+                <div class="sim-viewport-hud-bottom">
+                  <div class="sim-hud-keys">
+                    <span>W</span><span>A</span><span>S</span><span>D</span> Move &nbsp;|&nbsp;
+                    <span>L</span> Lock Mouse &nbsp;|&nbsp;
+                    <span>T</span> Tactical Cam &nbsp;|&nbsp;
+                    <span>Click / 1.5s Dwell</span> Interact
+                  </div>
+                  <div>
+                    Time: <strong id="simHudTime" class="text-cyan">0:00</strong> &nbsp;|&nbsp;
+                    Score: <strong id="simHudScore" class="text-emerald">100</strong> &nbsp;|&nbsp;
+                    Mistakes: <strong id="simHudMistakes" class="text-amber">0</strong> &nbsp;|&nbsp;
+                    Safe: <strong id="simHudCasualties" class="text-emerald">0/3</strong> &nbsp;|&nbsp;
+                    Smoke: <strong id="simHudSmokeRadius" class="text-rose">2.5m</strong>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Native Unity WebGL Embed Tab -->
+              <div class="data-card mt-4 p-4">
+                <div class="card-head mb-2">
+                  <h4 class="card-title text-sm">Unity WebGL Direct WASM Host</h4>
+                  <span class="badge-tag text-muted">STANDBY (Local / Exported)</span>
+                </div>
+                <p class="text-xs text-secondary mb-3">
+                  To stream your native Unity compilation directly into this dashboard: build WebGL from Unity via
+                  <code>DrillVR &gt; Build WebGL for Dashboard</code> (exports to <code>dashboard/unity-webgl/</code>).
+                </p>
+                <div id="unityWebglHostNotice" class="text-xs text-muted p-2" style="background: rgba(0,0,0,0.3); border-radius: 4px;">
+                  WebGL WASM Engine: <em>Three.js Interactive Digital Twin currently active.</em>
+                </div>
+              </div>
+            </div>
+
+            <!-- Simulation Telemetry Sidebar -->
+            <div class="sim-telemetry-sidebar">
+              <!-- Objective Card -->
+              <div class="sim-objective-card">
+                <div class="flex justify-between items-center mb-2">
+                  <span id="simCurrentStepBadge" class="badge-tag text-cyan font-bold">STEP 1 OF 7</span>
+                  <span class="live-dot-green"></span>
+                </div>
+                <h4 id="simCurrentStepTitle" class="text-base font-bold text-white mb-1">Confirm Briefing</h4>
+                <p id="simCurrentStepInstruction" class="text-xs text-secondary leading-relaxed">
+                  Review emergency protocol and confirm the Briefing Board at the West Command Post.
+                </p>
+              </div>
+
+              <!-- 7-Step Sequence Tracker -->
+              <div class="data-card p-3">
+                <div class="card-head mb-2">
+                  <h4 class="card-title text-xs">DRILL PROTOCOL STEPS</h4>
+                  <span class="text-xs text-muted">7 Stages</span>
+                </div>
+                <div id="simStepTimelineList">
+                  <!-- Populated via simulation3d.js -->
+                </div>
+              </div>
+
+              <!-- Equipment Inventory Status -->
+              <div class="data-card p-3">
+                <div class="card-head mb-2">
+                  <h4 class="card-title text-xs">EQUIPMENT INVENTORY</h4>
+                  <span class="text-xs text-cyan">Room 1</span>
+                </div>
+                <div class="inv-grid">
+                  <div id="simInvRespirator" class="inv-slot empty">
+                    <div>🤿</div>
+                    <div>Respirator</div>
+                  </div>
+                  <div id="simInvFlashlight" class="inv-slot empty">
+                    <div>🔦</div>
+                    <div>Flashlight</div>
+                  </div>
+                  <div id="simInvMedkit" class="inv-slot empty">
+                    <div>🩹</div>
+                    <div>MedKit</div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Casualty AI Tracker -->
+              <div class="data-card p-3">
+                <div class="card-head mb-2">
+                  <h4 class="card-title text-xs">CASUALTY STATUS</h4>
+                  <span class="text-xs text-muted">3 Civilians</span>
+                </div>
+                <div id="simCasualtyStatusList">
+                  <!-- Populated via simulation3d.js -->
+                </div>
+              </div>
+
+              <!-- Live Simulation Event Stream -->
+              <div class="data-card p-3">
+                <div class="card-head mb-2">
+                  <h4 class="card-title text-xs">TELEMETRY EVENT STREAM</h4>
+                  <span class="live-pulse"></span>
+                </div>
+                <ul id="simEventLogList" class="activity-timeline" style="max-height: 180px; overflow-y: auto;">
+                  <li class="activity-item info">
+                    <span class="activity-time">00:00:00</span>
+                    <span class="activity-text">Simulation engine standing by.</span>
+                  </li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- ================================================================= -->
+        <!-- VIEW 3: TRAINING SESSIONS TABLE                                   -->
+        <!-- ================================================================= -->
+        <section id="view-sessions" class="view-panel hidden">
+          <div class="view-header">
+            <div>
+              <h2 class="section-title">All Training Sessions</h2>
+              <p class="section-subtitle">Comprehensive ledger of all completed VR simulation attempts and step telemetry.</p>
+            </div>
+            <div class="filter-controls">
+              <select id="sessionStatusFilter" class="modern-select">
+                <option value="all">All Sessions</option>
+                <option value="passed">Passed (Score ≥ 60)</option>
+                <option value="failed">Needs Retraining (&lt; 60)</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="data-card">
+            <div class="table-responsive">
+              <table class="data-table">
+                <thead>
+                  <tr>
+                    <th>Session ID</th>
+                    <th>Trainee</th>
+                    <th>Scenario</th>
+                    <th class="text-right">Score</th>
+                    <th class="text-right">Total Time</th>
+                    <th class="text-center">Mistakes</th>
+                    <th class="text-center">Casualties Rescued</th>
+                    <th class="text-center">Hazard Multiplier</th>
+                    <th class="text-center">Status</th>
+                    <th>Weakest Step</th>
+                    <th>Completed At</th>
+                  </tr>
+                </thead>
+                <tbody id="allSessionsTableBody">
+                  <!-- Populated dynamically -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
+        <!-- ================================================================= -->
+        <!-- VIEW 3: TRAINEE MANAGEMENT                                        -->
+        <!-- ================================================================= -->
+        <section id="view-trainees" class="view-panel hidden">
+          <div class="view-header">
+            <div>
+              <h2 class="section-title">Trainee Cohort Management</h2>
+              <p class="section-subtitle">Profile cards, adaptive AI tiers, and individualized remediation pathways.</p>
+            </div>
+          </div>
+
+          <div class="trainee-cards-grid" id="traineeCardsContainer">
+            <!-- Trainee Cards populated dynamically -->
+          </div>
+        </section>
+
+        <!-- ================================================================= -->
+        <!-- VIEW 4: SIMULATION ANALYTICS                                      -->
+        <!-- ================================================================= -->
+        <section id="view-analytics" class="view-panel hidden">
+          <div class="view-header">
+            <div>
+              <h2 class="section-title">Deep Simulation Analytics</h2>
+              <p class="section-subtitle">Granular step telemetry, hazard exposure curves, and mistake frequency distribution.</p>
+            </div>
+          </div>
+
+          <div class="analytics-deep-grid">
+            <div class="kpi-card">
+              <div class="kpi-title">TOTAL CASUALTIES MUSTERED</div>
+              <div class="kpi-value">56 <span class="kpi-unit">/ 60 (93.3%)</span></div>
+              <div class="kpi-meta"><span class="trend trend-up">High Survival Rate</span></div>
+            </div>
+            <div class="kpi-card">
+              <div class="kpi-title">TOTAL PROTOCOL MISTAKES</div>
+              <div class="kpi-value">73 <span class="kpi-unit">Total</span></div>
+              <div class="kpi-meta"><span class="trend trend-down">Avg 3.65 / run</span></div>
+            </div>
+            <div class="kpi-card">
+              <div class="kpi-title">EQUIPMENT TRIAGE ACCURACY</div>
+              <div class="kpi-value">84.2<span class="kpi-unit">%</span></div>
+              <div class="kpi-meta"><span class="trend trend-neutral">Distractor Avoidance</span></div>
+            </div>
+            <div class="kpi-card">
+              <div class="kpi-title">HAZARD EXPOSURE PENALTIES</div>
+              <div class="kpi-value">12.5<span class="kpi-unit">pts avg</span></div>
+              <div class="kpi-meta"><span class="trend trend-up">Smoke Avoidance</span></div>
+            </div>
+          </div>
+
+          <div class="chart-card mt-4">
+            <div class="chart-header">
+              <h3 class="chart-title">7-Stage Protocol Failure Frequency</h3>
+              <p class="chart-subtitle">Where mistakes are most frequently made across all 20 drills</p>
+            </div>
+            <div class="chart-wrapper">
+              <canvas id="mistakeDistributionChart"></canvas>
+            </div>
+          </div>
+        </section>
+
+        <!-- ================================================================= -->
+        <!-- VIEW 5: SCENARIO LIBRARY                                          -->
+        <!-- ================================================================= -->
+        <section id="view-scenarios" class="view-panel hidden">
+          <div class="view-header">
+            <div>
+              <h2 class="section-title">Scenario Library</h2>
+              <p class="section-subtitle">Catalog of available training drills authored in Unity ScriptableObjects and synced with MySQL.</p>
+            </div>
+          </div>
+
+          <div class="scenarios-grid">
+            <!-- Scenario 1: Active -->
+            <div class="scenario-card active-card">
+              <div class="scenario-badge-row">
+                <span class="status-tag tag-active">ACTIVE SIMULATION</span>
+                <span class="difficulty-tag">ADAPTIVE DIFFICULTY</span>
+              </div>
+              <h3 class="scenario-title">Building Emergency Response Drill</h3>
+              <p class="scenario-code"><code>building_emergency_v1</code></p>
+              <p class="scenario-desc">
+                Multi-casualty evacuation inside a smoke-compromised administrative building. Features NavMesh casualty fleeing, dynamic smoke expansion, and radio triage.
+              </p>
+              <div class="scenario-meta">
+                <div class="meta-item"><span>Target Time:</span> <strong>180s</strong></div>
+                <div class="meta-item"><span>Steps:</span> <strong>7 Stages</strong></div>
+                <div class="meta-item"><span>Casualties:</span> <strong>3 Civilians</strong></div>
+              </div>
+              <div class="scenario-steps-list">
+                <ol>
+                  <li>Briefing Confirmation at Command Post</li>
+                  <li>Assess Situation &amp; Verify Blocked East Exit</li>
+                  <li>Tactical Equipment Selection in Room 1 Cache</li>
+                  <li>Search &amp; Muster 3 Casualty NPCs</li>
+                  <li>Evacuate via North Stairwell Safe Route</li>
+                  <li>Report Completion via Command Post Radio</li>
+                  <li>After-Action Review &amp; Debriefing</li>
+                </ol>
+              </div>
+            </div>
+
+            <!-- Scenario 2: Future Scope -->
+            <div class="scenario-card disabled-card">
+              <div class="scenario-badge-row">
+                <span class="status-tag tag-future">FUTURE SCOPE</span>
+                <span class="difficulty-tag">TIER: HARD</span>
+              </div>
+              <h3 class="scenario-title">Tunnel Smoke Evacuation</h3>
+              <p class="scenario-code"><code>tunnel_smoke_evacuation</code></p>
+              <p class="scenario-desc">
+                High-density vehicle tunnel smoke barrier response with zero natural light, emergency cross-passage discovery, and ventilation gate toggling.
+              </p>
+              <div class="scenario-meta">
+                <div class="meta-item"><span>Target Time:</span> <strong>240s</strong></div>
+                <div class="meta-item"><span>Steps:</span> <strong>5 Stages</strong></div>
+                <div class="meta-item"><span>Status:</span> <strong>Seeded in MySQL</strong></div>
+              </div>
+            </div>
+
+            <!-- Scenario 3: Future Scope -->
+            <div class="scenario-card disabled-card">
+              <div class="scenario-badge-row">
+                <span class="status-tag tag-future">FUTURE SCOPE</span>
+                <span class="difficulty-tag">TIER: HAZMAT</span>
+              </div>
+              <h3 class="scenario-title">Warehouse Hazmat Spill Response</h3>
+              <p class="scenario-code"><code>warehouse_hazmat_response</code></p>
+              <p class="scenario-desc">
+                Industrial chemical vapor containment, protective suit decontamination protocol, barrier tape boundary placement, and injured personnel evacuation.
+              </p>
+              <div class="scenario-meta">
+                <div class="meta-item"><span>Target Time:</span> <strong>300s</strong></div>
+                <div class="meta-item"><span>Steps:</span> <strong>6 Stages</strong></div>
+                <div class="meta-item"><span>Status:</span> <strong>Seeded in MySQL</strong></div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- ================================================================= -->
+        <!-- VIEW 6: PERFORMANCE REPORTS                                       -->
+        <!-- ================================================================= -->
+        <section id="view-reports" class="view-panel hidden">
+          <div class="view-header">
+            <div>
+              <h2 class="section-title">Cohort Performance Reports &amp; Exports</h2>
+              <p class="section-subtitle">Official training compliance audits, grade distributions, and printable summaries.</p>
+            </div>
+            <button id="downloadPdfBtn" class="btn btn-primary btn-sm">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9V2h12v7"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect width="12" height="8" x="6" y="14"/></svg>
+              <span>Print / Save PDF Report</span>
+            </button>
+          </div>
+
+          <div class="report-container data-card p-6">
+            <div class="report-header-banner">
+              <div>
+                <h3>MINISTRY OF HOME AFFAIRS 2023 DRILL AUDIT</h3>
+                <p>Cohort Evaluation Report: DrillVR Simulation Session Telemetry</p>
+              </div>
+              <div class="text-right">
+                <span class="badge-tag">STATUS: PASS (85% THRESHOLD)</span>
+                <p class="text-xs text-muted mt-1">Generated: <span id="reportTimestamp">Today</span></p>
+              </div>
+            </div>
+
+            <div class="grid-two mt-4">
+              <div class="compliance-box">
+                <h4>Course Requirement Checklist</h4>
+                <ul class="checklist">
+                  <li><span class="check-icon">✓</span> <strong>Mobile VR Client:</strong> Google Cardboard XR (1.5s gaze-dwell, 30+ FPS)</li>
+                  <li><span class="check-icon">✓</span> <strong>Autonomous NPC AI:</strong> CasualtyAI 4-state FSM with smoke fleeing</li>
+                  <li><span class="check-icon">✓</span> <strong>Dynamic Hazard:</strong> Particle smoke volume expanding with difficulty</li>
+                  <li><span class="check-icon">✓</span> <strong>Adaptive Difficulty:</strong> Rolling 5-session average engine (0.70x to 1.35x)</li>
+                  <li><span class="check-icon">✓</span> <strong>DBMS &amp; Backend:</strong> 3NF MySQL 8 schema, atomic transactions, JWT &amp; bcrypt</li>
+                  <li><span class="check-icon">✓</span> <strong>Field Resilience:</strong> Offline queue (pending_sessions.json) automatic FIFO sync</li>
+                </ul>
+              </div>
+
+              <div class="compliance-box">
+                <h4>Cohort Summary Statistics</h4>
+                <div class="stat-row"><span>Total Registered Trainees:</span> <strong>4</strong></div>
+                <div class="stat-row"><span>Total Completed Drills:</span> <strong>20</strong></div>
+                <div class="stat-row"><span>Mean Overall Score:</span> <strong>78.6 / 100</strong></div>
+                <div class="stat-row"><span>Grade S Trainees (&gt;90):</span> <strong>1 (Aarav Mehta)</strong></div>
+                <div class="stat-row"><span>Grade A/B Trainees (70-89):</span> <strong>2 (Diya Patel, Meera Nair)</strong></div>
+                <div class="stat-row"><span>Remediation Required (&lt;60):</span> <strong>1 (Kabir Rao)</strong></div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- ================================================================= -->
+        <!-- VIEW 7: PLATFORM SETTINGS                                         -->
+        <!-- ================================================================= -->
+        <section id="view-settings" class="view-panel hidden">
+          <div class="view-header">
+            <div>
+              <h2 class="section-title">Platform Configuration &amp; Network Settings</h2>
+              <p class="section-subtitle">Configure backend endpoints, adaptive difficulty thresholds, and diagnostics.</p>
+            </div>
+          </div>
+
+          <div class="settings-grid">
+            <div class="data-card">
+              <h3 class="card-title">Backend Connection Settings</h3>
+              <p class="card-subtitle">Define where the dashboard sends authenticated REST requests.</p>
+              
+              <div class="settings-form mt-4">
+                <div class="form-group">
+                  <label for="settingsApiUrl">API Server Base URL</label>
+                  <input id="settingsApiUrl" type="url" value="http://localhost:4000" class="modern-input" />
+                </div>
+                <button id="saveSettingsBtn" class="btn btn-primary btn-sm">Save &amp; Test Connection</button>
+              </div>
+            </div>
+
+            <div class="data-card">
+              <h3 class="card-title">Adaptive AI Difficulty Parameters</h3>
+              <p class="card-subtitle">Thresholds for calculating trainee tier over rolling 5 sessions.</p>
+
+              <div class="settings-form mt-4">
+                <div class="form-group">
+                  <label>Harder Tier Threshold: Avg Mistakes ≤ <strong>2.0</strong> (1.35x speed)</label>
+                </div>
+                <div class="form-group">
+                  <label>Normal Tier Threshold: Avg Mistakes <strong>2.1 – 5.0</strong> (1.00x speed)</label>
+                </div>
+                <div class="form-group">
+                  <label>Easier Tier Threshold: Avg Mistakes &gt; <strong>5.0</strong> (0.70x speed + Extra Hints)</label>
+                </div>
+                <button type="button" id="resetDemoBtn" class="btn btn-secondary btn-sm">Reset Demo Dataset</button>
+              </div>
+            </div>
+          </div>
+        </section>
+
+      </main>
+
+    </div>
+  </div>
+
+  <!-- ========================================================================= -->
+  <!-- 3. SIMULATION LAUNCHER MODAL                                             -->
+  <!-- ========================================================================= -->
+  <div id="simModal" class="modal-backdrop hidden">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3>Launch Mobile VR Training Drill</h3>
+        <button id="closeSimModalBtn" class="icon-btn">✕</button>
+      </div>
+      <div class="modal-body">
+        <p class="text-sm muted">To initiate a live emergency drill on an Android smartphone:</p>
+        <ol class="sim-steps">
+          <li>Ensure the trainee's phone has <code>DrillVR.apk</code> installed.</li>
+          <li>Connect the phone to the same local Wi-Fi as your development machine.</li>
+          <li>Set the Unity <code>ApiClient</code> Base URL to your laptop's LAN IP: <code>http://&lt;YOUR_IP&gt;:4000</code>.</li>
+          <li>Insert the phone into a Google Cardboard viewer and select <strong>Login &amp; Sync</strong>.</li>
+        </ol>
+      </div>
+      <div class="modal-footer">
+        <button id="dismissSimModalBtn" class="btn btn-primary">Understood</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Application Script -->
   <script src="app.js"></script>
 </body>
 </html>
