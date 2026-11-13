@@ -752,19 +752,44 @@
   // 11. CSV Export Handler
   // ---------------------------------------------------------------------------
   function exportSessionsCsv() {
-    const headers = ['Session ID', 'Trainee', 'Scenario', 'Score', 'Duration Seconds', 'Mistakes', 'Casualties Rescued', 'Hazard Multiplier', 'Status', 'Weakest Step', 'Completed Date'];
-    const rows = SEEDED_SESSIONS.map((s) => [
+    const headers = [
+      'Session ID',
+      'Trainee',
+      'Scenario',
+      'Total Score',
+      'Steps Score (0-40)',
+      'Evacuation Score (0-40)',
+      'Time Bonus (0-20)',
+      'Mistake Penalty',
+      'Duration Seconds',
+      'Mistakes',
+      'Casualties Rescued',
+      'Hazard Multiplier',
+      'Status',
+      'Weakest Step',
+      'Completed Date'
+    ];
+
+    const sourceData = (window._drillvrLoadedSessions && window._drillvrLoadedSessions.length > 0)
+      ? window._drillvrLoadedSessions
+      : SEEDED_SESSIONS;
+
+    const rows = sourceData.map((s) => [
       s.id,
-      `"${s.trainee}"`,
-      `"${s.scenario}"`,
-      s.score,
-      s.time,
-      s.mistakes,
-      `"${s.rescued}"`,
-      s.mult,
-      s.passed ? 'PASS' : 'FAIL',
-      `"${s.weakest}"`,
-      `"${s.date}"`,
+      `"${s.trainee || s.userName || 'Trainee'}"`,
+      `"${s.scenario || s.scenarioTitle || 'Building Emergency'}"`,
+      s.totalScore ?? s.score ?? 0,
+      s.stepsScore ?? 40,
+      s.evacuationScore ?? 40,
+      s.timeBonusScore ?? 10,
+      s.mistakePenalty ?? (s.mistakes ? s.mistakes * 5 : 0),
+      s.totalTimeSeconds ?? s.time ?? 0,
+      s.totalMistakes ?? s.mistakes ?? 0,
+      `"${s.casualtiesEvacuated ?? 3}/${s.casualtiesTotal ?? 3}"`,
+      s.difficultyMultiplier ?? s.mult ?? 1.0,
+      (s.passed !== false && s.passed !== 0) ? 'PASS' : 'FAIL',
+      `"${s.weakestStepKey || s.weakest || 'None'}"`,
+      `"${s.completedAt || s.date || new Date().toISOString()}"`,
     ]);
 
     const csvContent = 'data:text/csv;charset=utf-8,' + [headers.join(','), ...rows.map((e) => e.join(','))].join('\n');
@@ -776,7 +801,7 @@
     link.click();
     link.remove();
 
-    showToast('Exported CSV session ledger successfully.', 'success');
+    showToast(`Exported ${rows.length} session telemetry rows to CSV.`, 'success');
   }
 
   // ---------------------------------------------------------------------------
