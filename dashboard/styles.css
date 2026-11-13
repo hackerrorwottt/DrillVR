@@ -2078,3 +2078,39 @@ select:focus {
   align-items: center;
   font-size: 0.8rem;
 }
+
+/* High-DPI & Responsive Simulation Viewport Enhancements */
+.sim-viewport-container {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  min-height: 480px;
+  background: #060913;
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.45);
+}
+
+.sim-viewport-container canvas {
+  width: 100% !important;
+  height: 100% !important;
+  display: block;
+  outline: none;
+}
+
+.sim-viewport-container:fullscreen {
+  width: 100vw !important;
+  height: 100vh !important;
+  border-radius: 0;
+  border: none;
+}
+
+@media (max-width: 1024px) {
+  .sim-grid-layout {
+    grid-template-columns: 1fr !important;
+  }
+  .sim-viewport-container {
+    min-height: 380px;
+  }
+}
