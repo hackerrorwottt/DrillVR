@@ -648,6 +648,10 @@
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"/></svg>
                 <span>Fullscreen</span>
               </button>
+              <button id="simControlsGuideBtn" class="btn btn-secondary btn-sm" onclick="document.getElementById('simControlsModal').classList.remove('hidden')">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+                <span>Controls Guide</span>
+              </button>
             </div>
           </div>
 
@@ -816,6 +820,36 @@
                     <span class="activity-text">Simulation engine standing by.</span>
                   </li>
                 </ul>
+              </div>
+            </div>
+          </div>
+
+          <!-- Simulation Controls Guide Modal -->
+          <div id="simControlsModal" class="modal-overlay hidden" style="position: fixed; inset: 0; background: rgba(0,0,0,0.75); z-index: 9999; display: flex; align-items: center; justify-content: center;">
+            <div class="card p-4" style="max-width: 540px; width: 90%; background: #0f172a; border: 1px solid #334155; border-radius: 8px;">
+              <div class="flex justify-between items-center mb-3 border-b pb-2" style="border-color: #334155;">
+                <h3 class="text-sm font-bold text-white uppercase tracking-wider">Simulation Controls Guide</h3>
+                <button class="btn btn-secondary btn-sm" onclick="document.getElementById('simControlsModal').classList.add('hidden')">&times;</button>
+              </div>
+              <div class="table-responsive mb-3">
+                <table class="data-table text-xs">
+                  <thead>
+                    <tr><th>Action</th><th>Desktop (Browser)</th><th>Cardboard VR (Phone)</th></tr>
+                  </thead>
+                  <tbody>
+                    <tr><td><strong>Move</strong></td><td>W, A, S, D or Arrows</td><td>Gaze at Teleport Pads</td></tr>
+                    <tr><td><strong>Look / Aim</strong></td><td>Mouse (Click canvas to lock)</td><td>Head Gyroscope Tracking</td></tr>
+                    <tr><td><strong>Interact</strong></td><td>Click or press E / Gaze Dwell</td><td>Reticle Dwell (1.5s) / Tap</td></tr>
+                    <tr><td><strong>Tactical View</strong></td><td>Press T or Tactical Button</td><td>Cardboard Stereo Rig</td></tr>
+                    <tr><td><strong>Release Mouse</strong></td><td>Escape Key</td><td>N/A (Immersive VR)</td></tr>
+                  </tbody>
+                </table>
+              </div>
+              <p class="text-xs text-muted mb-3 leading-relaxed">
+                <em>Safety Protocol:</em> Always equip the Respirator Mask, Flashlight, and MedKit in Room 1 (NW) before entering dense smoke to avoid health degradation and score deductions.
+              </p>
+              <div class="flex justify-end">
+                <button class="btn btn-primary btn-sm" onclick="document.getElementById('simControlsModal').classList.add('hidden')">Close Guide</button>
               </div>
             </div>
           </div>
