@@ -88,6 +88,47 @@ function createSessionRouter(pool) {
       const stepByKey = new Map(validSteps.map((s) => [s.step_key, s.id]));
       const stepById = new Set(validSteps.map((s) => s.id));
 
+      // Allow instructors and admins to record evaluated sessions on behalf of a specific trainee
+      let recordedUserId = req.user.id;
+      if (req.user.role === 'instructor' || req.user.role === 'admin') {
+        const targetUserIdInput = body.targetUserId;
+        const targetUserEmail =
+          typeof body.targetUserEmail === 'string' && body.targetUserEmail.trim()
+            ? body.targetUserEmail.trim().toLowerCase()
+            : null;
+
+        if (targetUserIdInput || targetUserEmail) {
+          const [targetRows] = await conn.execute(
+            'SELECT id, role FROM users WHERE (id = ? OR email = ?) LIMIT 1',
+            [targetUserIdInput ? Number(targetUserIdInput) : null, targetUserEmail || '']
+          );
+
+          if (targetRows.length === 0) {
+            await conn.rollback();
+            return next(
+              new AppError(
+                404,
+                'TARGET_USER_NOT_FOUND',
+                `Target trainee profile (${targetUserEmail || targetUserIdInput}) not found.`
+              )
+            );
+          }
+
+          if (targetRows[0].role !== 'trainee') {
+            await conn.rollback();
+            return next(
+              new AppError(
+                400,
+                'INVALID_TARGET_USER',
+                'Evaluated drill sessions can only be recorded for trainee accounts.'
+              )
+            );
+          }
+
+          recordedUserId = targetRows[0].id;
+        }
+      }
+
       const [sessionResult] = await conn.execute(
         `INSERT INTO sessions (
           user_id, scenario_id, difficulty_multiplier, total_score,
@@ -96,7 +137,7 @@ function createSessionRouter(pool) {
           passed, weakest_step_key
         ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
         [
-          req.user.id,
+          recordedUserId,
           scenarioId,
           difficultyMultiplier,
           totalScore,
@@ -154,7 +195,7 @@ function createSessionRouter(pool) {
       await conn.commit();
       return res.status(201).json({
         sessionId,
-        userId: req.user.id,
+        userId: recordedUserId,
         scenarioId,
         totalScore,
         passed,

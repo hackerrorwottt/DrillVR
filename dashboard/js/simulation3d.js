@@ -29,7 +29,7 @@
     elapsedSeconds: 0,
     score: 100,
     mistakes: 0,
-    activeTrainee: 'Diya Sharma',
+    activeTrainee: 'Diya Patel',
     activeTraineeEmail: 'diya@drillvr.edu',
     difficultyTier: 'normal',
     difficultyMultiplier: 1.0, // Aligned with backend: harder=1.35, normal=1.00, easier=0.70
@@ -61,7 +61,7 @@
 
   // Helper to dynamically resolve backend API base URL
   function getApiBaseUrl() {
-    const saved = localStorage.getItem('DrillVR_ApiBaseUrl');
+    const saved = localStorage.getItem('DrillVR_ApiBaseUrl') || localStorage.getItem('drillvr_api_base');
     if (saved && saved.trim()) {
       return saved.trim().replace(/\/+$/, '');
     }
@@ -1239,7 +1239,20 @@
   function setTrainee(name, email) {
     SIM_STATE.activeTrainee = name;
     if (email) SIM_STATE.activeTraineeEmail = email;
-    logSimEvent(`Selected evaluation profile: ${name} (${SIM_STATE.activeTraineeEmail || 'Demo'})`);
+
+    // Automatically synchronize AI difficulty with trainee's adaptive profile
+    let targetTier = 'normal';
+    if (email === 'aarav@drillvr.edu') targetTier = 'harder';
+    else if (email === 'kabir@drillvr.edu') targetTier = 'easier';
+    else if (email === 'diya@drillvr.edu' || email === 'meera@drillvr.edu') targetTier = 'normal';
+
+    const diffSelect = document.getElementById('simDifficultySelect');
+    if (diffSelect && email !== 'demo@drillvr.edu') {
+      diffSelect.value = targetTier;
+      setDifficulty(targetTier);
+    }
+
+    logSimEvent(`Selected evaluation profile: ${name} (${SIM_STATE.activeTraineeEmail || 'Demo'}) - Adaptive Tier: ${targetTier.toUpperCase()}`);
   }
 
   // Exact synchronization with backend/src/services/difficultyService.js
@@ -1276,25 +1289,45 @@
       const breakdown = SIM_STATE.lastDebriefData || calculateDetailedScoreBreakdown();
       const apiBase = getApiBaseUrl();
 
-      // Check current session auth token
-      const token = localStorage.getItem('DrillVR_AuthToken');
-      const currentUserStr = localStorage.getItem('DrillVR_CurrentUser');
+      // Check current session auth token from both storage keys
+      const token = localStorage.getItem('DrillVR_AuthToken') || localStorage.getItem('drillvr_instructor_token');
+      const currentUserStr = localStorage.getItem('DrillVR_CurrentUser') || localStorage.getItem('drillvr_instructor_user');
       let currentUser = null;
       try { currentUser = JSON.parse(currentUserStr || '{}'); } catch (e) {}
 
-      // Notice: if logged in as instructor, warn that real sessions belong to trainees
-      if (currentUser && currentUser.role === 'instructor') {
+      // If user selected sandbox preview profile, do not pollute database
+      if (SIM_STATE.activeTraineeEmail === 'demo@drillvr.edu') {
+        alert(
+          'SANDBOX / PREVIEW MODE ACTIVE:\n\n' +
+          'Interactive Sandbox sessions run entirely locally in the browser to prevent polluting real trainee cohort statistics.\n\n' +
+          'To record an official evaluated drill session, select a registered Trainee Profile (e.g., Diya Patel, Aarav Sharma, Kabir Verma) from the TRAINEE PROFILE dropdown.'
+        );
+        logSimEvent('Preview sandbox session completed locally. No database sync performed.', 'info');
+        const modal = document.getElementById('simDebriefModal');
+        if (modal) modal.remove();
+        return;
+      }
+
+      // If logged in as instructor, confirm attribution to the selected trainee
+      if (currentUser && (currentUser.role === 'instructor' || currentUser.role === 'admin')) {
         const confirmSync = confirm(
-          `NOTICE:\nYou are logged in as Instructor (${currentUser.name}). In DrillVR's architecture, drill sessions are performed and submitted by Trainees.\n\nSubmitting this test session will record it under your current account for evaluation purposes.\n\nProceed with recording test session to MySQL?`
+          `CONFIRM EVALUATION SYNC:\n\n` +
+          `You are recording this drill session for Trainee:\n` +
+          `• Name: ${SIM_STATE.activeTrainee}\n` +
+          `• Email: ${SIM_STATE.activeTraineeEmail}\n` +
+          `• Score: ${breakdown.totalScore} / 100 (${breakdown.passed ? 'PASSED' : 'FAILED'})\n` +
+          `• Evaluator: ${currentUser.name} (${currentUser.role})\n\n` +
+          `Proceed with syncing to MySQL database?`
         );
         if (!confirmSync) {
-          logSimEvent('MySQL test session upload cancelled by user.', 'info');
+          logSimEvent('MySQL drill session sync cancelled by instructor.', 'info');
           return;
         }
       }
 
       const payload = {
         scenarioCode: 'building_emergency_v1',
+        targetUserEmail: SIM_STATE.activeTraineeEmail,
         difficultyMultiplier: SIM_STATE.difficultyMultiplier,
         totalScore: breakdown.totalScore,
         stepsScore: breakdown.stepsScore,

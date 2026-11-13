@@ -156,6 +156,74 @@ describe('DrillVR REST API Integration Tests', () => {
     expect(histRes.body.sessions[0].stepLogs.length).toBe(7);
   });
 
+  test('POST /api/sessions allows instructor to record evaluation on behalf of trainee', async () => {
+    // 1. Instructor records drill for test trainee
+    const [targetUserRows] = await pool.execute('SELECT id FROM users WHERE email = ? LIMIT 1', [testEmail]);
+    const expectedTraineeId = targetUserRows[0].id;
+
+    const evalRes = await request(app)
+      .post('/api/sessions')
+      .set('Authorization', `Bearer ${instructorToken}`)
+      .send({
+        scenarioCode: 'building_emergency_v1',
+        targetUserEmail: testEmail,
+        difficultyMultiplier: 1.0,
+        totalScore: 85,
+        stepsScore: 40,
+        evacuationScore: 40,
+        timeBonusScore: 10,
+        mistakePenalty: 5,
+        totalTimeSeconds: 120,
+        totalMistakes: 1,
+        casualtiesEvacuated: 3,
+        casualtiesTotal: 3,
+        passed: true,
+        weakestStepKey: 'search_casualties',
+        stepLogs: [
+          { stepKey: 'briefing', timeSpentSeconds: 15, mistakesInStep: 0, completed: true },
+          { stepKey: 'assess_situation', timeSpentSeconds: 20, mistakesInStep: 0, completed: true },
+          { stepKey: 'equipment_selection', timeSpentSeconds: 25, mistakesInStep: 0, completed: true },
+          { stepKey: 'search_casualties', timeSpentSeconds: 30, mistakesInStep: 1, completed: true },
+          { stepKey: 'evacuate_safe_route', timeSpentSeconds: 20, mistakesInStep: 0, completed: true },
+          { stepKey: 'report_command_post', timeSpentSeconds: 10, mistakesInStep: 0, completed: true },
+          { stepKey: 'debrief', timeSpentSeconds: 0, mistakesInStep: 0, completed: true },
+        ],
+      });
+
+    expect(evalRes.statusCode).toBe(201);
+    expect(evalRes.body.userId).toBe(expectedTraineeId); // Attributed to the target trainee
+
+    // 2. Instructor cannot record for non-existent user
+    const notFoundRes = await request(app)
+      .post('/api/sessions')
+      .set('Authorization', `Bearer ${instructorToken}`)
+      .send({
+        scenarioCode: 'building_emergency_v1',
+        targetUserEmail: 'nobody@drillvr.edu',
+        totalScore: 80,
+        totalTimeSeconds: 100,
+        totalMistakes: 0,
+        stepLogs: [{ stepKey: 'briefing', timeSpentSeconds: 10, completed: true }],
+      });
+    expect(notFoundRes.statusCode).toBe(404);
+    expect(notFoundRes.body.error.code).toBe('TARGET_USER_NOT_FOUND');
+
+    // 3. Instructor cannot record session for an admin account
+    const invalidTargetRes = await request(app)
+      .post('/api/sessions')
+      .set('Authorization', `Bearer ${instructorToken}`)
+      .send({
+        scenarioCode: 'building_emergency_v1',
+        targetUserEmail: 'admin@drillvr.edu',
+        totalScore: 80,
+        totalTimeSeconds: 100,
+        totalMistakes: 0,
+        stepLogs: [{ stepKey: 'briefing', timeSpentSeconds: 10, completed: true }],
+      });
+    expect(invalidTargetRes.statusCode).toBe(400);
+    expect(invalidTargetRes.body.error.code).toBe('INVALID_TARGET_USER');
+  });
+
   test('Adaptive difficulty endpoint returns harder, normal, and easier for seeded trainees', async () => {
     const aarav = await request(app)
       .get('/api/users/3/difficulty')

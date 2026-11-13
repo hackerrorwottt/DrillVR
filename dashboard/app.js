@@ -26,7 +26,7 @@
   const SEEDED_TRAINEES = [
     {
       userId: 3,
-      name: 'Aarav Mehta',
+      name: 'Aarav Sharma',
       email: 'aarav@drillvr.edu',
       sessionsCount: 5,
       avgScore: 94.2,
@@ -258,6 +258,8 @@
     isDemoMode = false;
     localStorage.removeItem(STORAGE_TOKEN_KEY);
     localStorage.removeItem(STORAGE_USER_KEY);
+    localStorage.removeItem('DrillVR_AuthToken');
+    localStorage.removeItem('DrillVR_CurrentUser');
 
     document.getElementById('loginScreen').classList.remove('hidden');
     document.getElementById('dashboardApp').classList.add('hidden');
@@ -871,7 +873,9 @@
 
           authToken = data.token;
           localStorage.setItem(STORAGE_TOKEN_KEY, authToken);
+          localStorage.setItem('DrillVR_AuthToken', authToken);
           localStorage.setItem(STORAGE_USER_KEY, JSON.stringify(data.user));
+          localStorage.setItem('DrillVR_CurrentUser', JSON.stringify(data.user));
           showDashboard(data.user);
           showToast(`Welcome back, ${data.user.name}`, 'success');
         } catch (err) {
@@ -999,6 +1003,7 @@
       settingsSaveBtn.addEventListener('click', () => {
         apiBase = settingsApiInput.value.trim().replace(/\/+$/, '');
         localStorage.setItem(STORAGE_URL_KEY, apiBase);
+        localStorage.setItem('DrillVR_ApiBaseUrl', apiBase);
         checkApiHealth();
         showToast('Settings saved successfully.', 'success');
       });

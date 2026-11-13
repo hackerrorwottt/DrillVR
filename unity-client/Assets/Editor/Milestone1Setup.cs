@@ -101,8 +101,10 @@ namespace DrillVR.EditorTools
             PlayerSettings.defaultInterfaceOrientation = UIOrientation.LandscapeLeft;
 
             PlayerSettings.SetApplicationIdentifier(BuildTargetGroup.Android, "com.drillvr.prototype");
-            PlayerSettings.Android.minSdkVersion = AndroidSdkVersions.AndroidApiLevel24;
+            PlayerSettings.Android.minSdkVersion = AndroidSdkVersions.AndroidApiLevel26;
             PlayerSettings.Android.targetSdkVersion = AndroidSdkVersions.AndroidApiLevelAuto;
+            PlayerSettings.Android.forceInternetPermission = true;
+            PlayerSettings.insecureHttpOption = InsecureHttpOption.AlwaysAllowed;
             PlayerSettings.SetScriptingBackend(BuildTargetGroup.Android, ScriptingImplementation.IL2CPP);
             PlayerSettings.Android.targetArchitectures = AndroidArchitecture.ARM64;
 
