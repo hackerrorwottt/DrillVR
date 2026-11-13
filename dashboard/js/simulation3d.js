@@ -761,6 +761,11 @@
       SIM_STATE.stepMetrics[stepIdx].completed = true;
     }
 
+    if (window.DrillVRSound) {
+      if (stepNumber >= 6) window.DrillVRSound.playRadioBeep();
+      else window.DrillVRSound.playSuccess();
+    }
+
     if (SIM_STATE.currentStepIndex < DRILL_STEPS.length - 1) {
       SIM_STATE.currentStepIndex = Math.min(DRILL_STEPS.length - 1, stepNumber);
     }
