@@ -4,6 +4,7 @@ using Unity.AI.Navigation;
 using UnityEditor;
 using UnityEditor.SceneManagement;
 using UnityEngine;
+using UnityEngine.AI;
 using UnityEngine.SpatialTracking;
 using UnityEngine.UI;
 using DrillVR.Core;

@@ -81,16 +81,21 @@ namespace DrillVR.EditorTools
             AssetDatabase.SaveAssets();
             AssetDatabase.Refresh();
 
-            EditorUtility.DisplayDialog(
-                "DrillVR Milestone 8 Setup Complete",
-                "Enabled HTTP LAN option and built Assets/Scenes/M8_FullOnlineLoop.unity!\n\n" +
-                "To test:\n" +
-                "1. Start backend (`cd backend && npm start`).\n" +
-                "2. In Unity Editor: click a preset trainee (Aarav/Diya/Kabir) or Register.\n" +
-                "3. On Android phone: change API Base URL on ApiClient (or BaseUrl InputField) to http://<YOUR_LAPTOP_IP>:4000.\n" +
-                "4. Verify difficulty changes after runs and offline runs sync after reconnecting.",
-                "OK"
-            );
+            Debug.Log("[DrillVR] Milestone 8 setup completed successfully. Assets and M8_FullOnlineLoop.unity saved.");
+
+            if (!Application.isBatchMode)
+            {
+                EditorUtility.DisplayDialog(
+                    "DrillVR Milestone 8 Setup Complete",
+                    "Enabled HTTP LAN option and built Assets/Scenes/M8_FullOnlineLoop.unity!\n\n" +
+                    "To test:\n" +
+                    "1. Start backend (`cd backend && npm start`).\n" +
+                    "2. In Unity Editor: click a preset trainee (Aarav/Diya/Kabir) or Register.\n" +
+                    "3. On Android phone: change API Base URL on ApiClient (or BaseUrl InputField) to http://<YOUR_LAPTOP_IP>:4000.\n" +
+                    "4. Verify difficulty changes after runs and offline runs sync after reconnecting.",
+                    "OK"
+                );
+            }
         }
 
         private static void BuildBackendFlowCanvas(

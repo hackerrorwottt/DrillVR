@@ -1,0 +1,43 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a0da4e9ad851a4734885ce2f53178252, type: 3}
+  m_Name: Scenario_BuildingEmergency
+  m_EditorClassIdentifier: Assembly-CSharp::DrillVR.Core.ScenarioConfig
+  scenarioCode: building_emergency_v1
+  scenarioTitle: Building Emergency Response Drill
+  briefingText: Smoke has been reported in the East Corridor. Assess the hazard, equip protective gear, locate casualties, evacuate via the safest route, and report back to the Command Post.
+  disclaimerText: Educational prototype only. Simulation scores must not be presented as proof of real-world qualification.
+  steps:
+  - {fileID: 11400000, guid: 90c63fc3b5b664b7ea17bc2f3a54f967, type: 2}
+  - {fileID: 11400000, guid: fa630c37a38534a678d2e034eaa10ce1, type: 2}
+  - {fileID: 11400000, guid: 8308b407945b646f1ba962883231cfc4, type: 2}
+  - {fileID: 11400000, guid: 993bb179a33e4447da574933abcc1183, type: 2}
+  - {fileID: 11400000, guid: bc90d71060bd44ef1ba4b91359c7cf18, type: 2}
+  - {fileID: 11400000, guid: 919d92e9d22c04a4c849ddc7b5b7a765, type: 2}
+  - {fileID: 11400000, guid: cff1f0cb9987c4550b87cdb2da3eb39b, type: 2}
+  availableEquipment:
+  - {fileID: 11400000, guid: a70e9fa9ab73247bf83f262c932756dc, type: 2}
+  - {fileID: 11400000, guid: af59abf7572744e2191c4ac2938b66d8, type: 2}
+  - {fileID: 11400000, guid: 32855c86dd3ca4c46af905dcbfed0d75, type: 2}
+  - {fileID: 11400000, guid: 85c168e0e38b1442aaff0576a2eb0192, type: 2}
+  - {fileID: 11400000, guid: 9ff56b9d99dbd4c38ab99a2eacfa9cec, type: 2}
+  baseSmokeGrowthRate: 0.25
+  difficultyMultiplier: 1
+  timeLimitSeconds: 300
+  maxSmokeRadius: 11
+  casualtyPanicDistance: 3.5
+  maxCasualtySmokeTime: 35
+  maxCasualtiesLostAllowed: 1
+  stepsWeight: 40
+  evacuationWeight: 40
+  timeBonusWeight: 20
+  mistakePenaltyPoints: 5

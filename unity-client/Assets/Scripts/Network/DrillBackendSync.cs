@@ -27,6 +27,11 @@ namespace DrillVR.Network
         public event Action<string> OnSyncStatusChanged;
         public event Action<DifficultyResponse> OnDifficultyApplied;
 
+#if UNITY_WEBGL && !UNITY_EDITOR
+        [System.Runtime.InteropServices.DllImport("__Internal")]
+        private static extern void DrillVR_NotifyDrillEnded(float totalScore, int passed, float timeRemaining);
+#endif
+
         private void Awake()
         {
             if (apiClient == null) apiClient = FindObjectOfType<ApiClient>();
@@ -169,6 +174,13 @@ namespace DrillVR.Network
             }
 
             UpdateSyncStatus("Uploading drill session...");
+#if UNITY_WEBGL && !UNITY_EDITOR
+            try
+            {
+                DrillVR_NotifyDrillEnded(report.totalScore, report.passed ? 1 : 0, 0f);
+            }
+            catch (Exception) { }
+#endif
             apiClient.SaveSessionWithRetry(
                 payload,
                 (res) =>

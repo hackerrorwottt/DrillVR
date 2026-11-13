@@ -6,6 +6,7 @@ using UnityEngine.AI;
 using UnityEngine.UI;
 using DrillVR.AI;
 using DrillVR.Core;
+using DrillVR.Environment;
 using DrillVR.Equipment;
 using DrillVR.Hazards;
 using DrillVR.Rescue;

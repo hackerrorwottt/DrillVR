@@ -49,7 +49,7 @@ namespace DrillVR.Player
 
         private void Update()
         {
-#if UNITY_EDITOR
+#if UNITY_EDITOR || UNITY_WEBGL
             if (IsTypingInInputField())
             {
                 return;
