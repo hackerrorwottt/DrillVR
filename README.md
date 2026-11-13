@@ -44,10 +44,10 @@ In civil defense, emergency services, and troop base security, regular building 
 - **Safety Hazards:** Inexperienced personnel exposed to real smoke simulators, darkened stairwells, or panic situations face authentic injury risks.
 - **Subjective & Incomplete Telemetry:** Physical drills rely on instructors taking manual notes on clipboards. Exact reaction times, pathing errors, equipment selection mistakes, and step durations cannot be objectively captured or replayed.
 - **Static, Non-Adaptive Scenarios:** In real drills, scenario parameters remain fixed. Fast learners are uncurbed, while struggling trainees repeat the same mistakes without targeted intervention.
-- **Prohibitive Hardware Barrier:** Standard enterprise VR solutions (Meta Quest Pro, HTC Vive, PC VR rigs) cost \$500 to \$2,000+ per trainee, requiring high-end gaming laptops or tethered tracking base stations that are impractical for mass deployment across regional barracks or educational academies.
+- **Prohibitive Hardware Barrier:** Commercial enterprise and PC VR solutions (e.g., Meta Quest 3/Pro or HTC Vive Focus 3, typically retailing at ~$500 to $1,500+ USD MSRP) require dedicated headset hardware and high-spec computing that can be cost-prohibitive for large-scale institutional rollouts across distributed barracks or training academies.
 
 ### The DrillVR Solution
-DrillVR delivers a standardized, low-cost, software-driven VR training platform running on **consumer Android smartphones ($100–$250)** paired with **Google Cardboard VR viewers ($5–$15)**. Trainees experience an immersive, stereoscopic emergency response drill that adapts dynamically to their performance, while instructors supervise cohort metrics via a centralized web dashboard powered by a normalized 3NF MySQL database.
+DrillVR delivers a standardized, accessible, software-driven VR training platform running on **consumer Android smartphones (Android 8.0+, typically ~$120–$250 USD / ~₹10,000–₹20,000 INR)** paired with **Google Cardboard V2 viewers (typically ~$5–$15 USD / ~₹400–₹1,200 INR)**. Trainees experience an immersive, stereoscopic emergency response drill that adapts dynamically to their performance, while instructors supervise cohort metrics via a centralized web dashboard powered by a normalized 3NF MySQL database.
 
 ---
 
@@ -55,13 +55,13 @@ DrillVR delivers a standardized, low-cost, software-driven VR training platform 
 
 | Challenge | Traditional Approach | DrillVR Innovation |
 |---|---|---|
-| **Hardware Accessibility** | Expensive PC VR rigs (\$1,500+) | Low-cost Android Google Cardboard (\$10) using Built-in Render Pipeline optimized for mobile GPUs |
+| **Hardware Accessibility** | Commercial standalone/PC VR headsets (~$500–$1,500+ USD MSRP) | Low-cost Cardboard viewer (~$5–$15 USD) using trainee smartphones with Built-in Render Pipeline optimized for mobile GPUs |
 | **Motion Sickness (Cybersickness)** | Smooth analog stick locomotion causing severe vestibular-ocular mismatch | Instantaneous comfort teleportation to discrete floor pads with zero rotational acceleration |
 | **Hands-Free Mobile Interaction** | Dual 6-DOF tracked controllers | Gaze reticle + 1.5s radial dwell ring timer + single-tap capacitive screen touch |
 | **Static Drills** | Scripted, identical hazard spread | Dynamic AI: `HazardSystem` smoke expansion scales with trainee skill; `CasualtyAI` NPCs flee danger autonomously |
-| **Subjective Evaluation** | Instructor clipboard notes | Millisecond-precision telemetry logged across 7 drill steps; deterministic multi-attribute scoring |
+| **Subjective Evaluation** | Instructor clipboard notes | Granular per-step execution telemetry (tracking step duration in decimal seconds, mistake counts, and hazard exposure times); deterministic multi-attribute scoring |
 | **Field Connectivity Gaps** | Cloud-dependent systems fail in basements / remote sites | Persistent local queue (`pending_sessions.json`) with automatic FIFO sync on reconnection |
-| **Instructor Oversight** | Fragmented spreadsheets | Real-time HTML5 + Chart.js dashboard showing cohort averages, weakest steps, and leaderboard |
+| **Instructor Oversight** | Fragmented spreadsheets | Interactive HTML5 + Chart.js dashboard showing cohort averages, weakest steps, and leaderboard rankings |
 
 ---
 
@@ -71,7 +71,7 @@ DrillVR delivers a standardized, low-cost, software-driven VR training platform 
    - Stereoscopic rendering via Google Cardboard XR SDK (`com.google.xr.cardboard` pinned at `#v1.30.0`).
    - Hands-free gaze interaction with dynamic reticle and `1.5s` radial fill dwell timer, alongside single-tap screen touch support.
    - Comfortable point-and-teleport locomotion via dedicated floor pads with parabolic gaze arc.
-   - Low-draw-call, mobile-optimized environment using Unity 3D primitives, baked lightmaps, ambient audio, and a live in-VR FPS counter targeting `30+ FPS` (typically `45–60 FPS`).
+   - Low-draw-call, mobile-optimized environment using Unity 3D primitives, baked lightmaps, ambient audio, and a live in-VR FPS counter targeting a minimum sustained budget of $\ge 30\,\text{FPS}$ (frame budget: $\le 33.3\,\text{ms/frame}$; physical handset measurements to be recorded via `FpsOverlay.cs`).
    - Seamless Editor test harness: mouse look (holding Right Mouse Button or toggling cursor lock with `L`), keyboard WASD walking, and left-click interaction.
 
 2. **Basic AI Inside VR:**
@@ -864,16 +864,16 @@ DrillVR is built for field resilience: trainees can complete drills even if netw
 - **AI Adaptive Difficulty Unit Tests:** Validates rolling average mistake calculation, boundary transitions (`2.0` and `5.0`), and parameter multipliers (`backend/tests/difficulty.test.js`).
 - **Postman API Collection:** Automated regression test suite with environment variable inheritance ([DrillVR_API.postman_collection.json](backend/docs/DrillVR_API.postman_collection.json)).
 
-### Mobile Performance Budget & Profiler Targets
+### Mobile Performance Budget & Hardware Target
 
-| Metric | Target | Observed (Mid-Range Android / Snapdragon 720G) | Observed (High-End / Snapdragon 8 Gen 2) |
+| Metric | Target Budget | Optimization Strategy | Status on Target Handsets |
 |---|---|---|---|
-| **Frame Rate (FPS)** | $\ge 30\,\text{FPS}$ sustained | **$45–52\,\text{FPS}$** | **$60\,\text{FPS}$ (vsync capped)** |
-| **Draw Calls / Batches** | $< 50$ batches | **$28–34$ batches** | **$28–34$ batches** |
-| **Triangle Count** | $< 50,000$ triangles | **$\sim 18,500$ triangles** | **$\sim 18,500$ triangles** |
-| **SetPass Calls** | $< 25$ | **$12$** | **$12$** |
-| **Memory Footprint** | $< 350\,\text{MB}$ RAM | **$\sim 185\,\text{MB}$ RAM** | **$\sim 210\,\text{MB}$ RAM** |
-| **Thermal Throttling** | None after 15 min | Negligible temperature rise | Nominal temperature |
+| **Frame Rate (FPS)** | $\ge 30\,\text{FPS}$ sustained ($\le 33.3\,\text{ms}$) | Target floor for mobile VR comfort; measured via `FpsOverlay.cs` | *Pending physical device runs (see [TEST_PLAN.md](docs/TEST_PLAN.md))* |
+| **Draw Calls / Batches** | $< 50$ batches | Unity static batching on building primitives and props | *Pending physical profiler trace* |
+| **Triangle Count** | $< 50,000$ triangles | Low-poly box and cylinder geometry throughout the facility | *Pending physical profiler trace* |
+| **SetPass Calls** | $< 25$ | Shared Standard materials (`Floor`, `Wall`, `ExteriorPad`) | *Pending physical profiler trace* |
+| **Memory Footprint** | $< 350\,\text{MB}$ RAM | Compact textures, compressed audio, and lightmap textures | *Pending physical profiler trace* |
+| **Thermal Behavior** | Zero thermal throttling | Low ALU fragment shader load prevents mobile GPU overheat | *Pending physical device runs* |
 
 ---
 

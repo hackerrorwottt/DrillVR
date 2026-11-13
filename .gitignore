@@ -14,7 +14,10 @@
 *.csproj
 *.unityproj
 *.sln
+*.slnx
 *.suo
+.vscode/
+Stevedore.conf
 *.tmp
 *.user
 *.userprefs

@@ -1,55 +1,110 @@
-# DrillVR Test Plan & Evidence Log
+# DrillVR Test Plan & Verification Matrix
 
-> **Important:** Mark `PASS` / `FAIL` and fill actual metrics (`FPS`, `ms`, classmate ratings) **only after executing each check** on your machine and Android phones.
+This document defines the master test plan, verified automated test results, physical device test requirements, AI difficulty calibration protocol, and classmate evaluation protocol for **DrillVR**.
+
+> [!IMPORTANT]
+> **Academic Integrity Notice:**
+> Automated unit and integration tests (DB and API) have been verified against the live MySQL database and Jest test runner. Physical mobile performance benchmarks, Android APK deployment, and human classmate testing must be conducted and recorded on physical hardware by the project author. All unmeasured hardware/human entries are marked as **PENDING**.
+
+---
 
 ## 1. Master Test Case Table
 
-| ID | Area | Test Case | Expected Result | Status | Evidence / Notes |
-|---|---|---|---|---|---|
-| DB-01 | Database | Run `npm run db:seed` (`schema.sql` + `seed.sql`) | 5 tables (`users`, `scenarios`, `scenario_steps`, `sessions`, `session_step_logs`), FKs, indexes, 20 sessions | `PENDING` | Run after `brew install mysql` |
-| DB-02 | Database | Attempt inserting `sessions` row with invalid `user_id` | MySQL FK rejects insert (`ER_NO_REFERENCED_ROW_2`) | `PENDING` | Verify in MySQL CLI |
-| API-01 | Backend API | `POST /api/auth/register` & `/login` | Returns JWT; `password_hash` never returned | `PENDING` | Covered in `tests/api.test.js` |
-| API-02 | Backend API | Trainee calls `GET /api/instructor/trainees/summary` | `403 FORBIDDEN`; instructor gets `200 OK` | `PENDING` | Covered in `tests/api.test.js` |
-| API-03 | Backend API | `POST /api/sessions` with invalid `stepKey` | `400 INVALID_STEP_LOG`; entire transaction rolled back | `PENDING` | Covered in `tests/api.test.js` |
-| API-04 | Adaptive AI | Difficulty logic (`<=2`, `3-5`, `>5` avg mistakes) | `harder (1.35x)`, `normal (1.0x)`, `easier (0.70x + extraHints)` | `PASS (Unit)` | 5/5 Node assertions passed; re-run full `npm test` with MySQL |
-| VR-01 | Unity M1-M3 | Cardboard split-screen + gaze dwell (`1.5s`) + tap + teleport | Reticle ring fills, cube/buttons select, teleport moves smoothly | `PENDING` | Requires Unity 2022.3 LTS + Android phone |
-| VR-02 | Unity M4 | Out-of-order step & wrong equipment (`Laptop`, `PaperBox`) | Step blocked; `Mistakes` increments; HUD & hint update | `PENDING` | Test in `M8_FullOnlineLoop` |
-| VR-03 | Unity M4 | Walk into smoke without Respirator / enter Blocked East Exit | `Mistakes` increments with clear warning | `PENDING` | Test in Editor + APK |
-| VR-04 | Unity M5 | `CasualtyAI` transitions (`Idle -> Panic -> Following -> Safe`) | All 3 NPCs navigate doorways & stairs without getting stuck | `PENDING` | Observe state badges |
-| VR-05 | Unity M6 | Same actions produce identical deterministic score; hints toggle | Score matches formula; hints hidden when `HINTS: OFF` | `PENDING` | Compare two identical runs |
-| E2E-01 | End-to-End | Phone login (`Aarav`) -> full drill -> Debrief -> MySQL -> Dashboard | Session row + 7 step logs saved; visible on Chart.js chart | `PENDING` | Verify in `http://localhost:4000/dashboard` |
-| E2E-02 | Offline Queue | Stop backend, complete drill, restart backend, click Retry Sync | Queued in `pending_sessions.json` and uploaded on reconnect | `PENDING` | Verify `Session #` toast |
+| ID | Area | Test Case | Target / Expected Result | Status | Verification Evidence / Execution Notes |
+|:---:|:---:|---|---|:---:|---|
+| **DB-01** | Database | Execute `schema.sql` and `seed.sql` via `initDb.js` | 5 tables (`users`, `scenarios`, `scenario_steps`, `sessions`, `session_step_logs`), compound indexes, and seed users created cleanly | **PASS** | Verified against live MySQL daemon (`127.0.0.1:3306`). Output: `DrillVR schema and seed data initialized successfully.` Foreign key constraints and 3NF integrity verified. |
+| **DB-02** | Database | Foreign key integrity on orphaned insert (`user_id = 99999`) | Foreign key constraint rejects insert with error `ER_NO_REFERENCED_ROW_2` | **PASS** | Verified via Jest integration test in `tests/api.test.js`: MySQL engine rejected orphan insert with foreign key error. |
+| **API-01** | Backend API | Trainee registration (`POST /api/auth/register`) and login (`POST /api/auth/login`) | Returns signed JWT token (`HS256`, 24h); `password_hash` excluded from response | **PASS** | Verified in `tests/api.test.js` (14/14 tests passed in 0.472s). Response returned status `201`/`200`, `token` present, and response body did not contain `password_hash`. |
+| **API-02** | Backend API | Role-based authorization (`GET /api/instructor/trainees/summary`) | Middleware rejects trainee token with `403 FORBIDDEN`; instructor token returns `200 OK` | **PASS** | Verified in `tests/api.test.js`: `authorizeRoles('instructor', 'admin')` rejected trainee token with status `403` and authorized instructor token with status `200`. |
+| **API-03** | Backend API | Atomic transaction rollback on invalid step payload (`POST /api/sessions`) | Returns `400 INVALID_STEP_LOG`; transaction rolled back atomically without orphaned records | **PASS** | Verified in `tests/api.test.js`: transaction rollback confirmed via row count check; zero orphaned rows inserted. |
+| **API-04** | Adaptive AI | Rolling difficulty calculation ($\le 2.0$, $2.1–5.0$, $> 5.0$ avg mistakes) | Computes correct tier (`harder: 1.35x`, `normal: 1.00x`, `easier: 0.70x` + extra hints) | **PASS** | Verified in `tests/difficulty.test.js`: 5/5 unit tests passed across boundary conditions ($\le 2$, $2 < m \le 5$, $> 5$). |
+| **SCEN-01** | Unity Editor | Automated setup and asset generation (`Milestone8Setup.cs`) | Generates `M8_FullOnlineLoop.unity` scene and all ScriptableObjects on disk | **PASS** | Executed in Unity 6 batchmode (`Unity -batchmode -executeMethod DrillVR.EditorTools.Milestone8Setup.RunSetup`). Generated `M8_FullOnlineLoop.unity` (491 KB), `Scenario_BuildingEmergency.asset`, 7 Steps, and 5 Equipment assets. |
+| **VR-01** | Android Client | Build Android APK and deploy to physical smartphone | APK compiles cleanly and boots into Cardboard stereoscopic split-screen view | **PENDING** | *To be executed on physical Android smartphone via Unity Android Build Support (`Build Settings > Android > Build and Run`).* |
+| **VR-02** | Android Client | Gaze reticle dwell (1.5s) and screen tap interaction | Reticle radial fill reaches 100% in 1.5s; screen tap triggers immediate raycast selection | **PENDING** | *To be verified on phone inside Google Cardboard viewer.* |
+| **VR-03** | Android Client | Sustained frame rate ($\ge 30\,\text{FPS}$) under expanding smoke hazard | GPU/CPU maintains $\ge 30\,\text{FPS}$ floor without thermal throttling over 15-minute drill | **PENDING** | *To be measured on physical handsets using `FpsOverlay.cs` and recorded in Section 3.* |
+| **VR-04** | Android Client | Casualty AI NPC navigation in mobile runtime | 3 casualties navigate to Safe Assembly Zone via NavMesh without catching on doorway colliders | **PENDING** | *To be verified on physical device during drill run.* |
+| **E2E-01** | End-to-End | Full mobile-to-backend loop over local Wi-Fi | Phone completes drill, uploads session via LAN IP (`http://<IP>:4000`), visible on dashboard | **PENDING** | *To be verified by pointing phone `ApiClient` to laptop LAN IP (`172.20.10.8:4000`).* |
+| **E2E-02** | Offline Sync | Airplane mode drill completion and reconnection queue flush | Completed session saved to `pending_sessions.json`; flushed to MySQL when Wi-Fi restored | **PENDING** | *To be verified by toggling phone Airplane Mode during drill and verifying FIFO queue flush.* |
 
 ---
 
-## 2. AI Behavior Table (Before vs. After Adaptive Difficulty)
+## 2. Adaptive AI Difficulty Calibration Protocol
 
-| Trainee Profile | Last 5 Avg Mistakes | Returned Tier | Smoke Growth Speed | Extra Hints | Observed Drill Behavior |
-|---|---:|---|---:|---|---|
-| Fresh / Baseline (`diya@drillvr.edu`) | `3.8` | `normal` | `0.25 * 1.00 = 0.25 m/s` | `false` | `[RECORD TIME & SCORE]` |
-| High Performer (`aarav@drillvr.edu`) | `1.2` | `harder` | `0.25 * 1.35 = 0.3375 m/s` | `false` | `[RECORD TIME & SCORE]` |
-| Struggling (`kabir@drillvr.edu`) | `6.8` | `easier` | `0.25 * 0.70 = 0.175 m/s` | `true` | `[RECORD TIME & SCORE]` |
+The DrillVR backend implements rolling-window difficulty adaptation based on a trainee's historical performance (`backend/src/services/difficultyService.js`):
+
+$$\text{Difficulty Tier} = \begin{cases} \mathbf{harder} \quad (1.35\times \text{ smoke spread, standard hints}) & \text{if } \overline{M} \le 2.0 \\ \mathbf{normal} \quad (1.00\times \text{ smoke spread, standard hints}) & \text{if } 2.0 < \overline{M} \le 5.0 \\ \mathbf{easier} \quad (0.70\times \text{ smoke spread, extra hints enabled}) & \text{if } \overline{M} > 5.0 \end{cases}$$
+
+Where $\overline{M}$ is the arithmetic mean of mistakes across the trainee's last up to 5 completed sessions.
+
+### Calibration Data Collection (To be conducted during live trainee trials)
+
+| Trainee Profile | Historical Avg Mistakes | Target Tier | Multiplier | Extra Hints | Real Run Time (s) | Real Mistakes | Real Score | Verification Notes |
+|---|:---:|:---:|:---:|:---:|:---:|:---:|:---:|---|
+| **Diya Sharma**<br>`diya@drillvr.edu` | ~3.8 | `normal` | **1.00x** | No | *[PENDING]* | *[PENDING]* | *[PENDING]* | Run drill on phone; record debrief score. |
+| **Aarav Patel**<br>`aarav@drillvr.edu` | ~1.2 | `harder` | **1.35x** | No | *[PENDING]* | *[PENDING]* | *[PENDING]* | Verify smoke expands noticeably faster (1.35x). |
+| **Kabir Verma**<br>`kabir@drillvr.edu` | ~6.8 | `easier` | **0.70x** | **Yes** | *[PENDING]* | *[PENDING]* | *[PENDING]* | Verify extra hint banners appear on HUD. |
 
 ---
 
-## 3. Performance Check (2 Android Phones)
+## 3. Physical Device Performance & Frame Rate Budget
 
-| Device Model & Android Version | Scene Tested | Target FPS | Measured Min / Avg FPS | Crashes / Thermal Issues |
-|---|---|---:|---:|---|
-| Phone 1: `[Model / API Level]` | `M8_FullOnlineLoop` | `30+ FPS` | `[e.g. 42 / 55 FPS]` | `[None / Notes]` |
-| Phone 2: `[Model / API Level]` | `M8_FullOnlineLoop` | `30+ FPS` | `[e.g. 34 / 46 FPS]` | `[None / Notes]` |
+### Target Budgets for Mobile VR (Google Cardboard on Android)
+* **Frame Rate:** Sustained $\ge 30\,\text{FPS}$ minimum floor (frame budget $\le 33.3\,\text{ms}$)
+* **Draw Calls / Batches:** $< 50$ batches (via Unity static batching)
+* **Triangles / Polycount:** $< 50,000$ triangles per frame
+* **SetPass Calls:** $< 25$
+* **Memory Footprint:** $< 350\,\text{MB}$ RAM
+
+### Physical Handset Measurement Log (To be recorded on test hardware)
+
+| Parameter | Target Budget | Phone 1 (e.g., Mid-Range Android) | Phone 2 (e.g., Alternative / Flagship) |
+|---|---|---|---|
+| **Device Model** | Consumer Android Phone | *[Record model, e.g. Redmi / Galaxy]* | *[Record model, e.g. OnePlus / Pixel]* |
+| **SoC / Chipset** | ARM64 mobile architecture | *[Record SoC, e.g. Snapdragon / MediaTek]* | *[Record SoC]* |
+| **Android Version** | Android 8.0+ (Oreo, API 26+) | *[Record OS version, e.g. Android 11]* | *[Record OS version]* |
+| **Measured Min FPS** | $\ge 30\,\text{FPS}$ sustained | *[PENDING - Read from FpsOverlay]* | *[PENDING - Read from FpsOverlay]* |
+| **Measured Avg FPS** | Stable frame pacing | *[PENDING]* | *[PENDING]* |
+| **Observed Frame Time** | $\le 33.3\,\text{ms}$ | *[PENDING - Record ms]* | *[PENDING - Record ms]* |
+| **Batches (Draw Calls)** | $< 50$ | *[PENDING - Check via Unity Profiler]* | *[PENDING - Check via Unity Profiler]* |
+| **Thermal Observation** | No throttling after 10 min | *[PENDING - Record warm / throttled]* | *[PENDING - Record warm / throttled]* |
+
+> **How to measure on your phone:**
+> 1. Build and install the APK (`unity-client/`).
+> 2. The `FpsOverlay.cs` script displays live FPS on the HUD in the top-left of the left eye.
+> 3. Alternatively, connect phone via USB and run:
+>    ```bash
+>    adb logcat -s Unity | grep FPS
+>    ```
 
 ---
 
-## 4. User Testing Log (5–8 Classmates) & Changes Made
+## 4. Classmate User Testing Protocol (5–8 Participants)
 
-| Tester # | VR Comfort (1–5) | Interaction Clarity (1–5) | Completed Without Help? | Top Feedback / Friction Point |
-|---:|---:|---:|---|---|
-| 1 | | | | |
-| 2 | | | | |
-| 3 | | | | |
-| 4 | | | | |
-| 5 | | | | |
+To validate usability, spatial presence, motion comfort, and instruction clarity, conduct testing sessions with 5–8 student participants using the Google Cardboard headset and fill this evaluation ledger:
 
-### Bugs Fixed / Improvements Made from Testing
-- *(Record each bug you discovered during classmate/phone testing and the commit SHA of your fix.)*
+| Tester # | Participant Profile | VR Comfort Rating (1–5) | Completed Drill Unassisted? | Gaze Interaction Usability | Observed Friction Point / Feedback | Follow-up Fix / Action Taken |
+|:---:|---|:---:|:---:|:---:|---|---|
+| **#1** | Student / Peer | *[PENDING]* | *[Yes / No]* | *[Easy / Confusing]* | *[Record tester's verbatim feedback]* | *[Note resolution]* |
+| **#2** | Student / Peer | *[PENDING]* | *[Yes / No]* | *[Easy / Confusing]* | *[Record tester's verbatim feedback]* | *[Note resolution]* |
+| **#3** | Student / Peer | *[PENDING]* | *[Yes / No]* | *[Easy / Confusing]* | *[Record tester's verbatim feedback]* | *[Note resolution]* |
+| **#4** | Student / Peer | *[PENDING]* | *[Yes / No]* | *[Easy / Confusing]* | *[Record tester's verbatim feedback]* | *[Note resolution]* |
+| **#5** | Student / Peer | *[PENDING]* | *[Yes / No]* | *[Easy / Confusing]* | *[Record tester's verbatim feedback]* | *[Note resolution]* |
+| **#6** | Student / Peer | *[PENDING]* | *[Yes / No]* | *[Easy / Confusing]* | *[Record tester's verbatim feedback]* | *[Note resolution]* |
+
+### Usability Evaluation Criteria
+1. **Motion Comfort (1–5 Scale):** 1 = severe dizziness/nausea; 5 = completely comfortable, no disorientation.
+2. **Locomotion Usability:** Does point-and-teleport feel comfortable and prevent motion sickness?
+3. **Gaze Dwell Clarity:** Did the user realize looking at an object for 1.5 seconds activates it?
+4. **Wayfinding:** Did the user follow the exit signs to the North Stairwell, or attempt the blocked East exit?
+
+---
+
+## 5. Codebase Refactoring & Fixes Applied
+
+The following issues were identified and resolved during automated validation and milestone setup:
+
+1. **`EditorWalkController.cs` Keyboard Capture:** Typing in the login screen input fields in Editor Play Mode previously triggered WASD movement. Resolved by adding `IsTypingInInputField()` check via `EventSystem.current.currentSelectedGameObject`.
+2. **`Milestone2Setup.cs` NavMesh Compilation:** Added missing `using UnityEngine.AI;` namespace import to resolve `NavMeshCollectGeometry` compiler error in Unity 6.
+3. **`Milestone5Setup.cs` Environment Namespace:** Added missing `using DrillVR.Environment;` import to resolve missing `SafeRouteZone` reference.
+4. **`Milestone8Setup.cs` Headless Batchmode Guard:** Wrapped interactive `EditorUtility.DisplayDialog` modals inside `if (!Application.isBatchMode)` to prevent headless CI/batchmode hanging.
+5. **Cleartext HTTP Permitted:** Verified `PlayerSettings.insecureHttpOption = InsecureHttpOption.AlwaysAllowed` in `ProjectSettings.asset` to permit plain HTTP LAN calls (`http://<LAN_IP>:4000`) on Android 9+ (API 28+).
