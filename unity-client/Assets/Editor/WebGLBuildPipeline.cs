@@ -32,6 +32,13 @@ namespace DrillVR.EditorTools
                 Milestone8Setup.RunSetup();
             }
 
+            // Ensure target is switched to WebGL
+            if (EditorUserBuildSettings.activeBuildTarget != BuildTarget.WebGL)
+            {
+                Debug.Log("[DrillVR] Switching active build target to WebGL...");
+                EditorUserBuildSettings.SwitchActiveBuildTarget(BuildTargetGroup.WebGL, BuildTarget.WebGL);
+            }
+
             // WebGL Configuration
             PlayerSettings.WebGL.compressionFormat = WebGLCompressionFormat.Disabled;
             PlayerSettings.WebGL.decompressionFallback = true;

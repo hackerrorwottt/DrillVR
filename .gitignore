@@ -42,6 +42,9 @@ sysinfo.txt
 *.aab
 *.unitypackage
 *.app
+.utmp/
+dashboard/unity-webgl/TemplateData/
+dashboard/unity-webgl/StreamingAssets/
 
 # Crashlytics / Gradle
 crashlytics-build.properties

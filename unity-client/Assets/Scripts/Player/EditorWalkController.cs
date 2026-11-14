@@ -34,7 +34,7 @@ namespace DrillVR.Player
             }
 
 #if UNITY_WEBGL && !UNITY_EDITOR
-            WebGLInput.captureAllKeyboardInput = false;
+            UnityEngine.WebGLInput.captureAllKeyboardInput = false;
 #endif
         }
 
