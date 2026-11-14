@@ -32,3 +32,76 @@
    - Queries the trainee's last 5 sessions (`idx_sessions_user_completed`): `avgMistakes <= 2` sets `1.35x` smoke speed (`harder`), `<= 5` keeps `1.0x` (`normal`), and `> 5` lowers to `0.70x` (`easier`) while enabling `extraHints`.
 6. **How is security enforced?**
    - Passwords hashed with `bcrypt`, stateless auth via signed `JWT`, `password_hash` never selected/returned in responses, public registration locked to `trainee` role, and instructor endpoints protected by `authorizeRoles('instructor', 'admin')`.
+
+---
+
+## 4. Physical Hardware Testing Protocol (VR-01 to VR-04)
+
+When presenting to examiners or capturing viva evidence, execute and record these 4 VR test cases on your physical Android phone mounted inside the Google Cardboard viewer:
+
+| Test ID | Target System | Physical Test Procedure | Expected Pass Evidence |
+|---|---|---|---|
+| **VR-01** | Cardboard Stereoscopic Dual-Camera Rig | Insert phone into Cardboard viewer. Look around 360°. Verify binocular depth perception and zero double-vision. | Left and right eye frustums align cleanly with correct IPD (interpupillary distance) and 60 FPS head tracking. |
+| **VR-02** | Gaze Reticle & Dwell Selection | Focus center reticle on Briefing Board or Teleport Pad for 1.5 seconds without pressing any buttons. | Circular progress ring fills over 1.5s; action triggers upon 100% completion with green feedback ring. |
+| **VR-03** | Capacitive Touch Trigger / Screen Tap | Look at an interactive object (e.g., Door or Respirator) and pull the Cardboard top conductive button (or tap screen). | Immediate interaction triggers without waiting for the 1.5s dwell timer. |
+| **VR-04** | Spatial Audio & Hazard Cues | Walk into the East Corridor near the Smoke Zone with stereo headphones on. | Smoke hiss audio pans dynamically to the right ear; smoke density fog dims visibility and triggers breathing audio. |
+
+---
+
+## 5. End-to-End & Airplane Mode Offline Queue Testing (E2E-01 & E2E-02)
+
+To demonstrate the resilience of the offline queueing architecture to examiners:
+
+### E2E-01: Online Connected Drill Execution
+1. Ensure phone is on the same Wi-Fi network as the laptop.
+2. Launch DrillVR app. Select **Diya Patel** preset.
+3. Complete the drill steps (Briefing → Equipment → Rescue → Evacuate → Command Post).
+4. Verify debrief screen displays: `Synced to MySQL (Session #XX)`.
+5. Refresh instructor dashboard (`http://localhost:8080`) and verify session appears in the ledger with verified step times.
+
+### E2E-02: Airplane Mode Disconnection & Reconnection Sync
+1. On your phone, turn on **Airplane Mode** (disconnecting Wi-Fi).
+2. In DrillVR, click **Play Offline (Queue)** or run the drill while disconnected.
+3. Complete the drill to the debrief screen.
+4. Observe the on-screen notice: `Network unreachable. Queued locally (1 pending)`.
+5. Inspect phone storage: payload is persisted in `Application.persistentDataPath/pending_sessions.json`.
+6. Turn **Airplane Mode OFF** (reconnecting Wi-Fi).
+7. Observe the automatic background retry: `Reconnected: uploaded 1 queued offline session(s)!`.
+8. Refresh the instructor dashboard and confirm the session was ingested into MySQL without data loss.
+
+---
+
+## 6. Hardware Performance Benchmarking Protocol
+
+Enable the built-in on-screen FPS counter (`FpsOverlay.cs`):
+1. Launch `M8_FullOnlineLoop` on your phone.
+2. Observe the green FPS readout displayed in the bottom-left corner of the HUD.
+3. Record real measurements across 3 test runs:
+   - Baseline Command Post (Open Air): Measure steady-state FPS.
+   - Dense Smoke Particle Zone (Corridor): Measure minimum FPS under particle load.
+   - Casualty Following (AI NavMesh Active): Measure average FPS with 3 active agents.
+4. Record phone specifications: Model Name, SoC (e.g. Snapdragon 8 Gen 2 / Dimensity), Android Version, and Average Measured FPS.
+
+---
+
+## 7. Adaptive Difficulty Verification Protocol
+
+Run three sessions across the seeded trainee profiles and observe real-time parameter adaptation:
+
+1. **Aarav Sharma (`aarav@drillvr.edu`) - High Performer**:
+   - Seed average mistakes: `1.2` (<= 2).
+   - Resulting tier: **HARDER** (`1.35x` smoke expansion speed, standard hints).
+2. **Diya Patel (`diya@drillvr.edu`) - Standard Performer**:
+   - Seed average mistakes: `3.8` (2 < avg <= 5).
+   - Resulting tier: **NORMAL** (`1.00x` smoke expansion speed, standard hints).
+3. **Kabir Verma (`kabir@drillvr.edu`) - Struggling Trainee**:
+   - Seed average mistakes: `6.8` (> 5).
+   - Resulting tier: **EASIER** (`0.70x` smoke expansion speed, extra hints enabled).
+
+Verify in MySQL after runs:
+```sql
+SELECT u.name, s.difficulty_multiplier, s.total_mistakes, s.weakest_step_key, s.completed_at
+FROM sessions s
+INNER JOIN users u ON u.id = s.user_id
+ORDER BY s.id DESC LIMIT 3;
+```
