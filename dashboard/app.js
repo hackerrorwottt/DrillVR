@@ -284,6 +284,10 @@
 
     if (!canvas) return;
 
+    canvas.addEventListener('click', () => {
+      canvas.focus();
+    });
+
     function showMissingBuildState() {
       if (loadingEl) loadingEl.style.display = 'none';
       if (errorEl) {

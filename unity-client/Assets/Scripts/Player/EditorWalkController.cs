@@ -32,6 +32,10 @@ namespace DrillVR.Player
             {
                 cameraTransform = Camera.main.transform;
             }
+
+#if UNITY_WEBGL && !UNITY_EDITOR
+            WebGLInput.captureAllKeyboardInput = false;
+#endif
         }
 
         private void Start()

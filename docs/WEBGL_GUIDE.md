@@ -70,3 +70,27 @@ You can also trigger the build headlessly from the terminal:
 
 * **In-Memory Buffering (WebGL):** In WebGL, `OfflineSessionQueue.cs` buffers any failed session uploads in-memory (`_cache`) for the duration of the active browser session.
 * **Test Case E2E-02:** Test case `E2E-02` (persisting session data across physical device restarts and offline airplane mode to `pending_sessions.json`) applies exclusively to physical mobile Android APK hardware. WebGL builds running in browser tabs do not write to physical local disks.
+
+---
+
+## 6. Browser Input, Focus, & Pointer Lock
+
+* **`WebGLInput.captureAllKeyboardInput = false`:** Configured in `EditorWalkController.cs:Awake()` under `#if UNITY_WEBGL && !UNITY_EDITOR`.
+* **Canvas Focus Requirement:** When `captureAllKeyboardInput` is disabled, the browser only sends keyboard events (`W A S D`, `L`, `Esc`) to Unity if the canvas element has keyboard focus. The user must click the canvas once to direct focus to the simulation.
+* **Pointer Lock via `L`:** Pressing `L` locks the cursor for continuous mouselook. Web browsers (Chrome, Firefox, Safari) enforce that pointer lock requests must originate from a user interaction gesture (clicking inside the canvas first). Pressing `Esc` unlocks the cursor.
+
+---
+
+## 7. Demo-Only Test Credentials (Seeded)
+
+> [!NOTE]
+> The following accounts are seeded exclusively for local development, automated testing, and demonstration evaluation by `backend/db/seed.sql` and `backend/src/scripts/initDb.js`. They are demo-only and must never be used in production.
+
+| Role | Name | Email | Password | Purpose |
+|---|---|---|---|---|
+| **Instructor** | Dr. Vikram Rao | `instructor@drillvr.edu` | `Instructor@123` | Dashboard evaluation, cohort analytics, and live session monitoring |
+| **Admin** | System Admin | `admin@drillvr.edu` | `Admin@123` | Master administrative API access |
+| **Trainee** | Aarav Sharma | `aarav@drillvr.edu` | `Trainee@123` | High Performer profile (Adaptive Tier: Harder, 1.35x hazard rate) |
+| **Trainee** | Diya Patel | `diya@drillvr.edu` | `Trainee@123` | Standard Performer profile (Adaptive Tier: Normal, 1.00x hazard rate) |
+| **Trainee** | Kabir Verma | `kabir@drillvr.edu` | `Trainee@123` | Struggling Trainee profile (Adaptive Tier: Easier, 0.70x hazard rate + forced hints) |
+| **Trainee** | Meera Nair | `meera@drillvr.edu` | `Trainee@123` | Developing Trainee profile (Adaptive Tier: Normal, 1.00x hazard rate) |
