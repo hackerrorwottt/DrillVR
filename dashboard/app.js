@@ -268,6 +268,81 @@
   // ---------------------------------------------------------------------------
   // 6. View Router (Sidebar Tab Switching)
   // ---------------------------------------------------------------------------
+  let unityDashboardInstance = null;
+  let unityDashboardLoading = false;
+
+  function loadUnityWebGLPlayer() {
+    if (unityDashboardInstance || unityDashboardLoading) return;
+
+    const canvas = document.getElementById('unity-dashboard-canvas');
+    const loadingEl = document.getElementById('unity-dashboard-loading');
+    const progressEl = document.getElementById('unity-dashboard-progress-bar');
+    const errorEl = document.getElementById('unity-dashboard-error');
+    const fullscreenBtn = document.getElementById('unityFullscreenBtn');
+
+    if (!canvas) return;
+
+    if (errorEl) errorEl.style.display = 'none';
+    if (loadingEl) loadingEl.style.display = 'block';
+    if (progressEl) progressEl.style.width = '0%';
+    unityDashboardLoading = true;
+
+    const buildUrl = 'unity-webgl/Build';
+    const buildName = 'unity-webgl';
+    const config = {
+      dataUrl: `${buildUrl}/${buildName}.data`,
+      frameworkUrl: `${buildUrl}/${buildName}.framework.js`,
+      codeUrl: `${buildUrl}/${buildName}.wasm`,
+      streamingAssetsUrl: 'unity-webgl/StreamingAssets',
+      companyName: 'DrillVRTeam',
+      productName: 'DrillVR',
+      productVersion: '2.4',
+      showBanner: (msg, type) => {
+        if (type === 'error' && errorEl) {
+          errorEl.style.display = 'block';
+        }
+      },
+    };
+
+    const loaderScript = document.createElement('script');
+    loaderScript.src = `${buildUrl}/${buildName}.loader.js`;
+    loaderScript.onload = () => {
+      if (typeof createUnityInstance !== 'function') {
+        unityDashboardLoading = false;
+        if (loadingEl) loadingEl.style.display = 'none';
+        if (errorEl) errorEl.style.display = 'block';
+        return;
+      }
+
+      createUnityInstance(canvas, config, (progress) => {
+        if (progressEl) progressEl.style.width = `${Math.round(100 * progress)}%`;
+      }).then((instance) => {
+        unityDashboardInstance = instance;
+        unityDashboardLoading = false;
+        if (loadingEl) loadingEl.style.display = 'none';
+        if (fullscreenBtn) {
+          fullscreenBtn.onclick = () => {
+            instance.SetFullscreen(1);
+          };
+        }
+      }).catch((err) => {
+        unityDashboardLoading = false;
+        if (loadingEl) loadingEl.style.display = 'none';
+        if (errorEl) errorEl.style.display = 'block';
+        console.warn('[DrillVR Unity WebGL] Engine initialization error:', err);
+      });
+    };
+
+    loaderScript.onerror = () => {
+      unityDashboardLoading = false;
+      if (loadingEl) loadingEl.style.display = 'none';
+      if (errorEl) errorEl.style.display = 'block';
+      console.info('[DrillVR Unity WebGL] Build loader not found at ' + loaderScript.src + '. Build the project in Unity Editor (DrillVR > Build WebGL for Dashboard).');
+    };
+
+    document.body.appendChild(loaderScript);
+  }
+
   function switchView(viewName) {
     activeView = viewName;
 
@@ -295,7 +370,9 @@
     // Update Breadcrumb
     const breadcrumb = document.getElementById('currentViewBreadcrumb');
     if (breadcrumb) {
-      breadcrumb.textContent = viewName.charAt(0).toUpperCase() + viewName.slice(1);
+      breadcrumb.textContent = viewName === 'unity-webgl'
+        ? 'Unity WebGL Build'
+        : viewName.charAt(0).toUpperCase() + viewName.slice(1);
     }
 
     // Trigger view-specific rendering
@@ -305,6 +382,9 @@
     if (viewName === 'reports') renderReportTimestamp();
     if (viewName === 'simulation') {
       window.dispatchEvent(new CustomEvent('drillvr:view_switched', { detail: 'simulation' }));
+    }
+    if (viewName === 'unity-webgl') {
+      loadUnityWebGLPlayer();
     }
   }
 
@@ -974,6 +1054,7 @@
       '6': 'scenarios',
       '7': 'reports',
       '8': 'settings',
+      '9': 'unity-webgl',
     };
 
     window.addEventListener('keydown', (e) => {

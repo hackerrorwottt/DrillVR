@@ -242,6 +242,14 @@
             </button>
           </li>
           <li class="nav-item">
+            <button class="nav-link" data-view="unity-webgl">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+              <span>Unity WebGL Build</span>
+              <span class="nav-badge" style="background: rgba(56, 189, 248, 0.2); color: #38bdf8; border: 1px solid rgba(56, 189, 248, 0.4);">WASM</span>
+              <kbd class="nav-key" title="Shortcut: Press 9">9</kbd>
+            </button>
+          </li>
+          <li class="nav-item">
             <button class="nav-link" data-view="sessions">
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
               <span>Training Sessions</span>
@@ -856,6 +864,69 @@
               <div class="flex justify-end">
                 <button class="btn btn-primary btn-sm" onclick="document.getElementById('simControlsModal').classList.add('hidden')">Close Guide</button>
               </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- ================================================================= -->
+        <!-- VIEW: NATIVE UNITY WEBGL SIMULATION (M8 SCENE WASM EXPORT)        -->
+        <!-- ================================================================= -->
+        <section id="view-unity-webgl" class="view-panel hidden">
+          <div class="view-header">
+            <div>
+              <div class="flex items-center gap-2">
+                <h2 class="section-title">Unity WebGL Build</h2>
+                <span class="nav-badge" style="background: rgba(56, 189, 248, 0.15); color: #38bdf8; border: 1px solid rgba(56, 189, 248, 0.3);">WASM &bull; Unity 6</span>
+              </div>
+              <p class="section-subtitle">Real Unity 6 simulation runtime (M8_FullOnlineLoop.unity) compiled to WebAssembly. Direct client-side engine with gaze dwell, AI agents, and live telemetry.</p>
+            </div>
+            <div class="header-actions">
+              <button id="unityFullscreenBtn" class="btn btn-secondary btn-sm flex items-center gap-2">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"/></svg>
+                <span>Fullscreen</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Controls Help Banner -->
+          <div class="unity-controls-bar" style="display: flex; gap: 16px; align-items: center; background: rgba(15, 23, 42, 0.6); border: 1px solid var(--border-subtle); border-radius: var(--radius-sm); padding: 10px 16px; margin-bottom: 16px; font-size: 0.8rem; color: var(--text-secondary); flex-wrap: wrap;">
+            <div class="flex items-center gap-2">
+              <strong style="color: var(--text-primary);">Controls:</strong>
+            </div>
+            <div><kbd class="nav-key">W A S D</kbd> Walk</div>
+            <div><kbd class="nav-key">Mouse</kbd> Aim / Look</div>
+            <div><kbd class="nav-key">L</kbd> Lock / Unlock Pointer</div>
+            <div><kbd class="nav-key">Click</kbd> or <kbd class="nav-key">1.5s Dwell</kbd> Interact &amp; Select</div>
+            <div><kbd class="nav-key">Esc</kbd> Release Cursor</div>
+          </div>
+
+          <!-- Player Container -->
+          <div class="unity-player-card" style="position: relative; width: 100%; aspect-ratio: 16 / 9; max-height: 720px; background: #020617; border: 1px solid var(--border-subtle); border-radius: var(--radius-md); overflow: hidden; box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5);">
+            <canvas id="unity-dashboard-canvas" style="width: 100%; height: 100%; display: block; background: #020617;" tabindex="-1"></canvas>
+            
+            <!-- Loading Indicator -->
+            <div id="unity-dashboard-loading" style="position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); text-align: center; display: none;">
+              <div style="font-size: 0.9rem; color: #94a3b8; margin-bottom: 10px;">Loading Unity 6 Engine &amp; Scene Assets...</div>
+              <div style="width: 240px; height: 8px; background: rgba(255, 255, 255, 0.1); border-radius: 999px; overflow: hidden; margin: 0 auto;">
+                <div id="unity-dashboard-progress-bar" style="height: 100%; width: 0%; background: #38bdf8; transition: width 0.2s;"></div>
+              </div>
+            </div>
+
+            <!-- Error / Missing Build Overlay -->
+            <div id="unity-dashboard-error" style="position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); background: rgba(15, 23, 42, 0.95); border: 1px solid rgba(239, 68, 68, 0.4); border-radius: var(--radius-md); padding: 28px 32px; max-width: 520px; text-align: center; color: var(--text-primary); box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.7); display: none;">
+              <div style="width: 48px; height: 48px; border-radius: 50%; background: rgba(239, 68, 68, 0.15); color: #f87171; display: flex; align-items: center; justify-content: center; margin: 0 auto 16px auto;">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+              </div>
+              <h3 style="font-size: 1.1rem; font-weight: 700; margin-bottom: 8px;">Unity WebGL Build Not Found</h3>
+              <p style="font-size: 0.85rem; color: var(--text-secondary); line-height: 1.5; margin-bottom: 16px;">
+                The WebAssembly build files have not been exported yet. Open the Unity Editor and execute the automated export pipeline:
+              </p>
+              <div style="background: rgba(2, 6, 23, 0.7); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: var(--radius-sm); padding: 10px; font-family: ui-monospace, monospace; font-size: 0.8rem; color: #38bdf8; margin-bottom: 16px;">
+                DrillVR &gt; Build WebGL for Dashboard
+              </div>
+              <p style="font-size: 0.75rem; color: var(--text-muted); margin: 0;">
+                Expected loader: <code>dashboard/unity-webgl/Build/unity-webgl.loader.js</code>
+              </p>
             </div>
           </div>
         </section>
