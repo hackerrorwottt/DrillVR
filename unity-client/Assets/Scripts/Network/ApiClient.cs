@@ -41,7 +41,24 @@ namespace DrillVR.Network
             }
 
             string savedUrl = PlayerPrefs.GetString(BaseUrlPrefKey, string.Empty);
-            BaseUrl = NormalizeUrl(!string.IsNullOrEmpty(savedUrl) ? savedUrl : defaultBaseUrl);
+            string initialUrl = !string.IsNullOrEmpty(savedUrl) ? savedUrl : defaultBaseUrl;
+
+#if UNITY_WEBGL && !UNITY_EDITOR
+            if (string.IsNullOrEmpty(savedUrl) && !string.IsNullOrEmpty(Application.absoluteURL))
+            {
+                try
+                {
+                    Uri pageUri = new Uri(Application.absoluteURL);
+                    initialUrl = $"{pageUri.Scheme}://{pageUri.Host}:4000";
+                }
+                catch (Exception ex)
+                {
+                    Debug.LogWarning($"[ApiClient] Could not parse page URL for API host: {ex.Message}");
+                }
+            }
+#endif
+
+            BaseUrl = NormalizeUrl(initialUrl);
         }
 
         private void Update()

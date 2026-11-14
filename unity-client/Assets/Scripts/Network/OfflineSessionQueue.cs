@@ -6,8 +6,10 @@ using UnityEngine;
 namespace DrillVR.Network
 {
     /// <summary>
-    /// Persists failed session uploads to Application.persistentDataPath so offline runs
-    /// automatically retry once connectivity returns.
+    /// Persists failed session uploads to Application.persistentDataPath on native platforms (Android/Editor)
+    /// so offline runs automatically retry once connectivity returns.
+    /// Under WebGL, maintains the queue safely in memory during the browser session (E2E-02 physical disk
+    /// queue persistence applies strictly to physical mobile handsets).
     /// </summary>
     public class OfflineSessionQueue : MonoBehaviour
     {
@@ -17,7 +19,9 @@ namespace DrillVR.Network
         public int PendingCount => EnsureLoaded().items.Count;
         public event Action<int> OnQueueChanged;
 
+#if !UNITY_WEBGL
         private string QueueFilePath => Path.Combine(Application.persistentDataPath, QueueFileName);
+#endif
 
         public void Enqueue(SaveSessionRequest session)
         {
@@ -63,6 +67,7 @@ namespace DrillVR.Network
                 return _cache;
             }
 
+#if !UNITY_WEBGL
             if (File.Exists(QueueFilePath))
             {
                 try
@@ -75,6 +80,7 @@ namespace DrillVR.Network
                     Debug.LogWarning($"Failed to read offline queue: {ex.Message}");
                 }
             }
+#endif
 
             if (_cache == null || _cache.items == null)
             {
@@ -86,6 +92,7 @@ namespace DrillVR.Network
 
         private void SaveToDisk()
         {
+#if !UNITY_WEBGL
             try
             {
                 string json = JsonUtility.ToJson(_cache, true);
@@ -95,6 +102,10 @@ namespace DrillVR.Network
             {
                 Debug.LogError($"Failed to persist offline session queue: {ex.Message}");
             }
+#else
+            // In WebGL, offline sessions remain buffered in-memory within _cache for automatic retry
+            // during the active browser session. Physical disk queueing (E2E-02) applies to Android APK hardware.
+#endif
         }
     }
 }

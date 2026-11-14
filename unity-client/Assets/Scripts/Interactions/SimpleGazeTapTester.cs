@@ -93,7 +93,7 @@ namespace DrillVR.Interactions
 
             bool tapped = false;
 
-#if UNITY_EDITOR
+#if UNITY_EDITOR || UNITY_WEBGL
             tapped = Input.GetMouseButtonDown(0);
 #elif UNITY_ANDROID
             tapped = Api.IsTriggerPressed;
