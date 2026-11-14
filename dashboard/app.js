@@ -928,6 +928,32 @@
       });
     });
 
+    // Keyboard navigation shortcuts (1-8 to switch views)
+    const viewShortcuts = {
+      '1': 'overview',
+      '2': 'simulation',
+      '3': 'sessions',
+      '4': 'trainees',
+      '5': 'analytics',
+      '6': 'scenarios',
+      '7': 'reports',
+      '8': 'settings',
+    };
+
+    window.addEventListener('keydown', (e) => {
+      if (['INPUT', 'TEXTAREA', 'SELECT'].includes(document.activeElement?.tagName)) {
+        return;
+      }
+      if (e.metaKey || e.ctrlKey || e.altKey) {
+        return;
+      }
+      const targetView = viewShortcuts[e.key];
+      if (targetView) {
+        e.preventDefault();
+        switchView(targetView);
+      }
+    });
+
     // Sidebar Collapse Toggle
     const collapseBtn = document.getElementById('sidebarCollapseBtn');
     const sidebar = document.getElementById('sidebar');
