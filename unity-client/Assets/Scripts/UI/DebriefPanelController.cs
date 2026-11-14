@@ -41,6 +41,9 @@ namespace DrillVR.UI
         [SerializeField] private Vector3 spawnPosition = new Vector3(-15.5f, 0f, 0f);
         [SerializeField] private Vector3 spawnEuler = new Vector3(0f, 90f, 0f);
 
+        private float _lastRetryTime = -10f;
+        private const float RETRY_COOLDOWN_SECONDS = 3.0f;
+
         private void Awake()
         {
             if (assessmentManager == null) assessmentManager = FindObjectOfType<AssessmentManager>();
@@ -105,23 +108,41 @@ namespace DrillVR.UI
 
             if (stepTimesText != null)
             {
-                StringBuilder sb = new StringBuilder();
-                foreach (StepLogEntry s in report.stepBreakdown)
+                if (report.stepBreakdown != null && report.stepBreakdown.Count > 0)
                 {
-                    string mark = s.completed ? "OK" : "X";
-                    sb.AppendLine($"[{mark}] {s.stepNumber}. {s.title}: {s.timeSpentSeconds:F1}s | {s.mistakesInStep} err");
+                    StringBuilder sb = new StringBuilder();
+                    foreach (StepLogEntry s in report.stepBreakdown)
+                    {
+                        if (s == null) continue;
+                        string mark = s.completed ? "OK" : "X";
+                        sb.AppendLine($"[{mark}] {s.stepNumber}. {s.title}: {s.timeSpentSeconds:F1}s | {s.mistakesInStep} err");
+                    }
+                    stepTimesText.text = sb.ToString().TrimEnd();
                 }
-                stepTimesText.text = sb.ToString().TrimEnd();
+                else
+                {
+                    stepTimesText.text = "No step breakdown recorded.";
+                }
             }
 
             if (improveText != null)
             {
-                StringBuilder sb = new StringBuilder("Areas to Improve:\n");
-                foreach (string area in report.areasToImprove)
+                if (report.areasToImprove != null && report.areasToImprove.Count > 0)
                 {
-                    sb.AppendLine($"- {area}");
+                    StringBuilder sb = new StringBuilder("Areas to Improve:\n");
+                    foreach (string area in report.areasToImprove)
+                    {
+                        if (!string.IsNullOrEmpty(area))
+                        {
+                            sb.AppendLine($"- {area}");
+                        }
+                    }
+                    improveText.text = sb.ToString().TrimEnd();
                 }
-                improveText.text = sb.ToString().TrimEnd();
+                else
+                {
+                    improveText.text = "Areas to Improve:\n- None! Exemplary drill run.";
+                }
             }
 
             if (disclaimerText != null)
@@ -175,6 +196,13 @@ namespace DrillVR.UI
 
         private void HandleRetrySyncClicked()
         {
+            if (Time.unscaledTime - _lastRetryTime < RETRY_COOLDOWN_SECONDS)
+            {
+                HandleSyncStatusChanged("Please wait a moment before retrying...");
+                return;
+            }
+
+            _lastRetryTime = Time.unscaledTime;
             if (apiClient != null)
             {
                 HandleSyncStatusChanged("Retrying offline session queue...");
