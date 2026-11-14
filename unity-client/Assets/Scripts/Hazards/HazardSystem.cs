@@ -20,6 +20,7 @@ namespace DrillVR.Hazards
         [Header("Smoke Visuals & Spread")]
         [SerializeField] private ParticleSystem smokeParticles;
         [SerializeField] private Transform smokeVolumeVisual;
+        [SerializeField] private AudioSource smokeAudioSource;
         [SerializeField] private float initialRadius = 1.6f;
         [SerializeField] private float inspectorSpeedMultiplier = 1.0f;
         [SerializeField] private float exposureMistakeCooldownSeconds = 3.0f;
@@ -90,6 +91,31 @@ namespace DrillVR.Hazards
             }
 
             CheckPlayerExposure();
+            UpdateSmokeAudioProximity();
+        }
+
+        private void UpdateSmokeAudioProximity()
+        {
+            if (smokeAudioSource == null || playerTransform == null)
+            {
+                return;
+            }
+
+            float dist = GetDistanceToSmokeEdge(playerTransform.position);
+            if (dist <= 0f)
+            {
+                smokeAudioSource.volume = 1.0f;
+                smokeAudioSource.pitch = 1.08f; // Heightened tension inside smoke core
+            }
+            else if (dist < 12.0f)
+            {
+                smokeAudioSource.volume = Mathf.Clamp01(1.0f - (dist / 12.0f));
+                smokeAudioSource.pitch = 1.0f;
+            }
+            else
+            {
+                smokeAudioSource.volume = 0f;
+            }
         }
 
         public bool IsPointInSmoke(Vector3 worldPos)
