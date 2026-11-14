@@ -1,5 +1,11 @@
 # DrillVR: AI-Driven Mobile VR Live Training Drills
 
+[![Live Demo on Netlify](https://img.shields.io/badge/Live%20Demo-Netlify-00C7B7?style=for-the-badge&logo=netlify&logoColor=white)](https://drillvr-simulation.netlify.app)
+[![GitHub Repository](https://img.shields.io/badge/GitHub-Repository-181717?style=for-the-badge&logo=github&logoColor=white)](https://github.com/hackerrorwottt/DrillVR)
+
+> 🌐 **Live Web Application:** [https://drillvr-simulation.netlify.app](https://drillvr-simulation.netlify.app)  
+> Interactive Instructor Command Dashboard with real-time 3D simulation telemetry, cohort analytics, and adaptive difficulty evaluation.
+
 An immersive, low-cost, AI-driven mobile Virtual Reality training and evaluation system for live building emergency response drills, built with **Unity 6 (6000.6.7f1, Google Cardboard XR)**, **Node.js 20+ Express**, **MySQL 8 (3NF)**, and a **Chart.js Instructor Command Dashboard**.
 
 > **Educational Prototype Disclaimer:** DrillVR is an academic prototype inspired by the problem statement *"Augmented/Virtual Reality system for the live training of troops"* (Ministry of Home Affairs, 2023, Smart Automation, Software). It contains **no weapons or combat content**. Simulation scores are for educational demonstration only and must not be presented as proof of real-world qualification. Augmented Reality (AR) is future scope only.
@@ -649,10 +655,10 @@ npm start
 *The server binds to `0.0.0.0:4000`, making it accessible to both local browsers and mobile devices on your local Wi-Fi network.*
 
 #### 1.7 Open the Instructor Dashboard
-1. Open your web browser and navigate to:
-   ```text
-   http://localhost:4000/dashboard
-   ```
+- **Live Cloud Deployment (Netlify):** [https://drillvr-simulation.netlify.app](https://drillvr-simulation.netlify.app)
+- **Local Development Server:** `http://localhost:8080` (or `http://localhost:4000/dashboard`)
+
+1. Open your web browser and navigate to the live URL or local server.
 2. Log in using the seeded instructor credentials:
    - **Email:** `instructor@drillvr.edu`
    - **Password:** `Instructor@123`
