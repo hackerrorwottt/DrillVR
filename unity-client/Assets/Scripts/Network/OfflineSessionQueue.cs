@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
+#if !UNITY_WEBGL
 using System.IO;
+#endif
 using UnityEngine;
 
 namespace DrillVR.Network

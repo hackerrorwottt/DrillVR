@@ -601,7 +601,7 @@ Ensure the MySQL 8 service is running on your machine:
 #### 1.2 Configure Environment Variables
 Navigate to the `backend/` directory:
 ```bash
-cd /Users/shloksharma/Desktop/DrillVR/backend
+cd backend
 cp .env.example .env
 ```
 Open `.env` in an editor and configure your database credentials:
@@ -671,10 +671,7 @@ You can run, test, and score the entire VR drill directly in the Unity Editor us
 #### 2.1 Open the Project in Unity Hub
 1. Launch **Unity Hub**.
 2. Click **Add** → **Add project from disk**.
-3. Select the folder:
-   ```text
-   /Users/shloksharma/Desktop/DrillVR/unity-client
-   ```
+3. Select the `unity-client` folder in the project root.
 4. Choose **Unity 6 (6000.6.7f1)** as the Editor version.
 5. Click on the project to open it (allow Unity to import packages on first run).
 
