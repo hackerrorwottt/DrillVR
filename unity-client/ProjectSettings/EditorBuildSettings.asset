@@ -8,4 +8,5 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/M8_FullOnlineLoop.unity
     guid: ab30af7dbf6464b6ba13db70fc750978
-  m_configObjects: {}
+  m_configObjects:
+    com.unity.xr.management.loader_settings: {fileID: 11400000, guid: 8d7d2eb38e34b421ba3c444e2d51112f, type: 2}
