@@ -507,13 +507,49 @@
   // ---------------------------------------------------------------------------
   function renderAllSessionsView() {
     const tbody = document.getElementById('allSessionsTableBody');
-    const filter = document.getElementById('sessionStatusFilter').value;
+    const statusSelect = document.getElementById('sessionStatusFilter');
+    const searchInput = document.getElementById('sessionSearchInput');
+    const resetBtn = document.getElementById('sessionResetFiltersBtn');
+    const countBadge = document.getElementById('sessionFilterCount');
     if (!tbody) return;
     tbody.innerHTML = '';
 
+    const statusFilter = statusSelect ? statusSelect.value : 'all';
+    const searchQuery = searchInput ? searchInput.value.trim().toLowerCase() : '';
+
     let sessions = [...SEEDED_SESSIONS];
-    if (filter === 'passed') sessions = sessions.filter((s) => s.passed);
-    if (filter === 'failed') sessions = sessions.filter((s) => !s.passed);
+    const totalCount = sessions.length;
+
+    if (statusFilter === 'passed') sessions = sessions.filter((s) => s.passed);
+    if (statusFilter === 'failed') sessions = sessions.filter((s) => !s.passed);
+
+    if (searchQuery) {
+      sessions = sessions.filter((s) =>
+        (s.trainee && s.trainee.toLowerCase().includes(searchQuery)) ||
+        (s.scenario && s.scenario.toLowerCase().includes(searchQuery)) ||
+        (s.weakest && s.weakest.toLowerCase().includes(searchQuery))
+      );
+    }
+
+    if (resetBtn) {
+      const isFiltered = statusFilter !== 'all' || searchQuery.length > 0;
+      resetBtn.style.display = isFiltered ? 'inline-flex' : 'none';
+    }
+
+    if (countBadge) {
+      countBadge.textContent = `${sessions.length} of ${totalCount} sessions`;
+    }
+
+    if (sessions.length === 0) {
+      const emptyTr = document.createElement('tr');
+      emptyTr.innerHTML = `
+        <td colspan="11" class="text-center text-muted" style="padding: 2rem 1rem;">
+          No training sessions match the selected filters.
+        </td>
+      `;
+      tbody.appendChild(emptyTr);
+      return;
+    }
 
     sessions.forEach((s) => {
       const tr = document.createElement('tr');
@@ -1006,9 +1042,21 @@
     const printBtn = document.getElementById('downloadPdfBtn');
     if (printBtn) printBtn.addEventListener('click', () => window.print());
 
-    // Sessions Status Filter
+    // Sessions Status & Search Filters
     const statusFilter = document.getElementById('sessionStatusFilter');
     if (statusFilter) statusFilter.addEventListener('change', renderAllSessionsView);
+
+    const sessionSearch = document.getElementById('sessionSearchInput');
+    if (sessionSearch) sessionSearch.addEventListener('input', renderAllSessionsView);
+
+    const sessionReset = document.getElementById('sessionResetFiltersBtn');
+    if (sessionReset) {
+      sessionReset.addEventListener('click', () => {
+        if (statusFilter) statusFilter.value = 'all';
+        if (sessionSearch) sessionSearch.value = '';
+        renderAllSessionsView();
+      });
+    }
 
     // Trainee Search Filter (Overview Table)
     const filterInput = document.getElementById('traineeFilterInput');

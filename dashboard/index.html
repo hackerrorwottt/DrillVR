@@ -869,12 +869,15 @@
               <h2 class="section-title">All Training Sessions</h2>
               <p class="section-subtitle">Comprehensive ledger of all completed VR simulation attempts and step telemetry.</p>
             </div>
-            <div class="filter-controls">
+            <div class="filter-controls" style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap;">
+              <input type="text" id="sessionSearchInput" placeholder="Search trainee or scenario..." style="max-width: 220px; font-size: 0.8rem; padding: 6px 10px; background: rgba(15, 23, 42, 0.8); border: 1px solid var(--border-subtle); border-radius: var(--radius-sm); color: var(--text-primary);" />
               <select id="sessionStatusFilter" class="modern-select">
                 <option value="all">All Sessions</option>
                 <option value="passed">Passed (Score ≥ 60)</option>
                 <option value="failed">Needs Retraining (&lt; 60)</option>
               </select>
+              <button id="sessionResetFiltersBtn" class="btn btn-secondary btn-sm" style="display: none; padding: 6px 10px; font-size: 0.75rem;" title="Reset filters">Reset</button>
+              <span id="sessionFilterCount" class="nav-badge" style="font-size: 0.75rem; padding: 4px 8px;">20 sessions</span>
             </div>
           </div>
 
