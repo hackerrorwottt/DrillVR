@@ -71,7 +71,7 @@
     },
     {
       userId: 5,
-      name: 'Kabir Rao',
+      name: 'Kabir Verma',
       email: 'kabir@drillvr.edu',
       sessionsCount: 5,
       avgScore: 58.4,
@@ -87,26 +87,26 @@
   ];
 
   const SEEDED_SESSIONS = [
-    { id: 20, trainee: 'Aarav Mehta', userId: 3, scenario: 'Building Emergency Drill', score: 98.0, time: 142.5, mistakes: 1, rescued: '3/3', mult: 1.35, passed: true, weakest: 'None', date: 'Today 15:30' },
+    { id: 20, trainee: 'Aarav Sharma', userId: 3, scenario: 'Building Emergency Drill', score: 98.0, time: 142.5, mistakes: 1, rescued: '3/3', mult: 1.35, passed: true, weakest: 'None', date: 'Today 15:30' },
     { id: 19, trainee: 'Diya Patel', userId: 4, scenario: 'Building Emergency Drill', score: 88.0, time: 165.0, mistakes: 3, rescued: '3/3', mult: 1.00, passed: true, weakest: 'Assess Situation', date: 'Today 14:15' },
     { id: 18, trainee: 'Meera Nair', userId: 6, scenario: 'Building Emergency Drill', score: 85.0, time: 172.0, mistakes: 2, rescued: '3/3', mult: 1.00, passed: true, weakest: 'Equipment Selection', date: 'Today 12:45' },
-    { id: 17, trainee: 'Kabir Rao', userId: 5, scenario: 'Building Emergency Drill', score: 65.0, time: 210.0, mistakes: 6, rescued: '2/3', mult: 0.70, passed: true, weakest: 'Evacuate via Safe Route', date: 'Today 11:10' },
-    { id: 16, trainee: 'Aarav Mehta', userId: 3, scenario: 'Building Emergency Drill', score: 95.0, time: 148.0, mistakes: 1, rescued: '3/3', mult: 1.35, passed: true, weakest: 'None', date: 'Yesterday 16:20' },
+    { id: 17, trainee: 'Kabir Verma', userId: 5, scenario: 'Building Emergency Drill', score: 65.0, time: 210.0, mistakes: 6, rescued: '2/3', mult: 0.70, passed: true, weakest: 'Evacuate via Safe Route', date: 'Today 11:10' },
+    { id: 16, trainee: 'Aarav Sharma', userId: 3, scenario: 'Building Emergency Drill', score: 95.0, time: 148.0, mistakes: 1, rescued: '3/3', mult: 1.35, passed: true, weakest: 'None', date: 'Yesterday 16:20' },
     { id: 15, trainee: 'Diya Patel', userId: 4, scenario: 'Building Emergency Drill', score: 85.0, time: 170.0, mistakes: 4, rescued: '3/3', mult: 1.00, passed: true, weakest: 'Assess Situation', date: 'Yesterday 14:50' },
     { id: 14, trainee: 'Meera Nair', userId: 6, scenario: 'Building Emergency Drill', score: 81.0, time: 176.0, mistakes: 3, rescued: '3/3', mult: 1.00, passed: true, weakest: 'Equipment Selection', date: 'Yesterday 13:10' },
-    { id: 13, trainee: 'Kabir Rao', userId: 5, scenario: 'Building Emergency Drill', score: 58.0, time: 225.0, mistakes: 7, rescued: '2/3', mult: 0.70, passed: false, weakest: 'Evacuate via Safe Route', date: 'Yesterday 10:40' },
-    { id: 12, trainee: 'Aarav Mehta', userId: 3, scenario: 'Building Emergency Drill', score: 91.0, time: 155.0, mistakes: 1, rescued: '3/3', mult: 1.00, passed: true, weakest: 'None', date: '2 days ago' },
+    { id: 13, trainee: 'Kabir Verma', userId: 5, scenario: 'Building Emergency Drill', score: 58.0, time: 225.0, mistakes: 7, rescued: '2/3', mult: 0.70, passed: false, weakest: 'Evacuate via Safe Route', date: 'Yesterday 10:40' },
+    { id: 12, trainee: 'Aarav Sharma', userId: 3, scenario: 'Building Emergency Drill', score: 91.0, time: 155.0, mistakes: 1, rescued: '3/3', mult: 1.00, passed: true, weakest: 'None', date: '2 days ago' },
     { id: 11, trainee: 'Diya Patel', userId: 4, scenario: 'Building Emergency Drill', score: 80.0, time: 178.0, mistakes: 4, rescued: '3/3', mult: 1.00, passed: true, weakest: 'Assess Situation', date: '2 days ago' },
     { id: 10, trainee: 'Meera Nair', userId: 6, scenario: 'Building Emergency Drill', score: 78.0, time: 185.0, mistakes: 3, rescued: '3/3', mult: 1.00, passed: true, weakest: 'Equipment Selection', date: '2 days ago' },
-    { id: 9, trainee: 'Kabir Rao', userId: 5, scenario: 'Building Emergency Drill', score: 60.0, time: 220.0, mistakes: 7, rescued: '2/3', mult: 1.00, passed: true, weakest: 'Evacuate via Safe Route', date: '2 days ago' },
-    { id: 8, trainee: 'Aarav Mehta', userId: 3, scenario: 'Building Emergency Drill', score: 95.0, time: 150.0, mistakes: 1, rescued: '3/3', mult: 1.00, passed: true, weakest: 'None', date: '3 days ago' },
+    { id: 9, trainee: 'Kabir Verma', userId: 5, scenario: 'Building Emergency Drill', score: 60.0, time: 220.0, mistakes: 7, rescued: '2/3', mult: 1.00, passed: true, weakest: 'Evacuate via Safe Route', date: '2 days ago' },
+    { id: 8, trainee: 'Aarav Sharma', userId: 3, scenario: 'Building Emergency Drill', score: 95.0, time: 150.0, mistakes: 1, rescued: '3/3', mult: 1.00, passed: true, weakest: 'None', date: '3 days ago' },
     { id: 7, trainee: 'Diya Patel', userId: 4, scenario: 'Building Emergency Drill', score: 82.0, time: 172.0, mistakes: 4, rescued: '3/3', mult: 1.00, passed: true, weakest: 'Assess Situation', date: '3 days ago' },
     { id: 6, trainee: 'Meera Nair', userId: 6, scenario: 'Building Emergency Drill', score: 76.0, time: 190.0, mistakes: 3, rescued: '3/3', mult: 1.00, passed: true, weakest: 'Equipment Selection', date: '3 days ago' },
-    { id: 5, trainee: 'Kabir Rao', userId: 5, scenario: 'Building Emergency Drill', score: 55.0, time: 235.0, mistakes: 7, rescued: '2/3', mult: 1.00, passed: false, weakest: 'Evacuate via Safe Route', date: '3 days ago' },
-    { id: 4, trainee: 'Aarav Mehta', userId: 3, scenario: 'Building Emergency Drill', score: 92.0, time: 158.0, mistakes: 2, rescued: '3/3', mult: 1.00, passed: true, weakest: 'Equipment Selection', date: '4 days ago' },
+    { id: 5, trainee: 'Kabir Verma', userId: 5, scenario: 'Building Emergency Drill', score: 55.0, time: 235.0, mistakes: 7, rescued: '2/3', mult: 1.00, passed: false, weakest: 'Evacuate via Safe Route', date: '3 days ago' },
+    { id: 4, trainee: 'Aarav Sharma', userId: 3, scenario: 'Building Emergency Drill', score: 92.0, time: 158.0, mistakes: 2, rescued: '3/3', mult: 1.00, passed: true, weakest: 'Equipment Selection', date: '4 days ago' },
     { id: 3, trainee: 'Diya Patel', userId: 4, scenario: 'Building Emergency Drill', score: 78.0, time: 180.0, mistakes: 4, rescued: '3/3', mult: 1.00, passed: true, weakest: 'Equipment Selection', date: '4 days ago' },
     { id: 2, trainee: 'Meera Nair', userId: 6, scenario: 'Building Emergency Drill', score: 75.0, time: 192.0, mistakes: 3, rescued: '3/3', mult: 1.00, passed: true, weakest: 'Equipment Selection', date: '4 days ago' },
-    { id: 1, trainee: 'Kabir Rao', userId: 5, scenario: 'Building Emergency Drill', score: 52.0, time: 240.0, mistakes: 7, rescued: '1/3', mult: 1.00, passed: false, weakest: 'Evacuate via Safe Route', date: '4 days ago' },
+    { id: 1, trainee: 'Kabir Verma', userId: 5, scenario: 'Building Emergency Drill', score: 52.0, time: 240.0, mistakes: 7, rescued: '1/3', mult: 1.00, passed: false, weakest: 'Evacuate via Safe Route', date: '4 days ago' },
   ];
 
   const STEP_BOTTLENECKS = [
@@ -584,10 +584,10 @@ ${safeText}
     list.innerHTML = '';
 
     const activities = [
-      { text: '<strong>Aarav Mehta</strong> finished Run #20 with Grade S (98.0 pts)', time: '12m ago' },
+      { text: '<strong>Aarav Sharma</strong> finished Run #20 with Grade S (98.0 pts)', time: '12m ago' },
       { text: '<strong>Diya Patel</strong> finished Run #19 with Grade A (88.0 pts)', time: '48m ago' },
       { text: '<strong>Meera Nair</strong> cleared equipment cache with 2 mistakes', time: '2h ago' },
-      { text: '<strong>Kabir Rao</strong> evacuated 2/3 casualties (Safe route delay)', time: '3h ago' },
+      { text: '<strong>Kabir Verma</strong> evacuated 2/3 casualties (Safe route delay)', time: '3h ago' },
     ];
 
     activities.forEach((act) => {
@@ -1057,7 +1057,7 @@ ${safeText}
     if (previewBtn) {
       previewBtn.addEventListener('click', () => {
         isDemoMode = true;
-        showDashboard({ name: 'Dr. Vikram Sharma', role: 'Lead Instructor' });
+        showDashboard({ name: 'Dr. Vikram Rao', role: 'Lead Instructor' });
         showToast('Entered Instant Demo Mode (No backend required).', 'success');
       });
     }
@@ -1103,7 +1103,7 @@ ${safeText}
           // If offline, seamlessly fall back to demo preview
           isDemoMode = true;
           const fallbackUser = {
-            name: email ? email.split('@')[0].toUpperCase() : 'Dr. Vikram Sharma',
+            name: email ? email.split('@')[0].toUpperCase() : 'Dr. Vikram Rao',
             role: 'Lead Instructor (Demo)',
           };
           showDashboard(fallbackUser);
@@ -1138,6 +1138,12 @@ ${safeText}
 
     window.addEventListener('keydown', (e) => {
       if (['INPUT', 'TEXTAREA', 'SELECT'].includes(document.activeElement?.tagName)) {
+        return;
+      }
+      if (document.activeElement?.id === 'unity-dashboard-canvas' || e.target?.id === 'unity-dashboard-canvas') {
+        return;
+      }
+      if (e.key === 'Escape') {
         return;
       }
       if (e.metaKey || e.ctrlKey || e.altKey) {
@@ -1231,6 +1237,9 @@ ${safeText}
     // Global Search Bar Keyboard Shortcut (⌘K / Ctrl+K)
     const globalSearch = document.getElementById('globalSearchInput');
     document.addEventListener('keydown', (e) => {
+      if (document.activeElement?.id === 'unity-dashboard-canvas' || e.target?.id === 'unity-dashboard-canvas') {
+        return;
+      }
       if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
         e.preventDefault();
         if (globalSearch) globalSearch.focus();

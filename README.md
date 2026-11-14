@@ -542,11 +542,11 @@ Running `npm run db:seed` in `backend/` creates a pre-populated test environment
 
 | Role | Name | Email | Password | Seeded Profile & AI Difficulty Tier |
 |---|---|---|---|---|
-| **Instructor** | Dr. Vikram Sharma | `instructor@drillvr.edu` | `Instructor@123` | Full dashboard access, cohort analytics, weakest step detection |
+| **Instructor** | Dr. Vikram Rao | `instructor@drillvr.edu` | `Instructor@123` | Full dashboard access, cohort analytics, weakest step detection |
 | **Admin** | System Admin | `admin@drillvr.edu` | `Admin@123` | Master administrative privileges across all endpoints |
-| **Trainee** | Aarav Mehta | `aarav@drillvr.edu` | `Trainee@123` | **High Performer:** 5 sessions, avg score `94.2`, avg mistakes `1.2` → **Harder** (`1.35x` hazard speed) |
+| **Trainee** | Aarav Sharma | `aarav@drillvr.edu` | `Trainee@123` | **High Performer:** 5 sessions, avg score `94.2`, avg mistakes `1.2` → **Harder** (`1.35x` hazard speed) |
 | **Trainee** | Diya Patel | `diya@drillvr.edu` | `Trainee@123` | **Consistent Trainee:** 5 sessions, avg score `82.6`, avg mistakes `3.8` → **Normal** (`1.00x` hazard speed) |
-| **Trainee** | Kabir Rao | `kabir@drillvr.edu` | `Trainee@123` | **Struggling Trainee:** 5 sessions, avg score `58.4`, avg mistakes `6.8` → **Easier** (`0.70x` speed + forced hints) |
+| **Trainee** | Kabir Verma | `kabir@drillvr.edu` | `Trainee@123` | **Struggling Trainee:** 5 sessions, avg score `58.4`, avg mistakes `6.8` → **Easier** (`0.70x` speed + forced hints) |
 | **Trainee** | Meera Nair | `meera@drillvr.edu` | `Trainee@123` | **Developing Trainee:** 5 sessions, avg score `79.0`, avg mistakes `2.8` → **Normal** (`1.00x` hazard speed) |
 
 ---
