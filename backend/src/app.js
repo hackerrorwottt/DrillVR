@@ -11,7 +11,27 @@ const { createInstructorRouter } = require('./routes/instructorRoutes');
 function createApp(pool) {
   const app = express();
 
-  app.use(cors());
+  const envOrigins = process.env.ALLOWED_ORIGINS
+    ? process.env.ALLOWED_ORIGINS.split(',').map((o) => o.trim()).filter(Boolean)
+    : [];
+  const allowedOrigins = envOrigins.length > 0
+    ? envOrigins
+    : ['http://localhost:8080', 'http://127.0.0.1:8080'];
+
+  const corsOptions = {
+    origin: (origin, callback) => {
+      // Allow requests with no origin (mobile Cardboard APK, curl, Unity Editor, and server-to-server)
+      if (!origin || allowedOrigins.includes(origin)) {
+        return callback(null, true);
+      }
+      return callback(null, false);
+    },
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
+    optionsSuccessStatus: 200,
+  };
+
+  app.use(cors(corsOptions));
   app.use(express.json({ limit: '1mb' }));
 
   // Real-time latency tracking header for VR sync performance auditing

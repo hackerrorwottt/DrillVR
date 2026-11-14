@@ -1,7 +1,7 @@
 # DrillVR Demo Video, APK & Viva Preparation Guide
 
 ## 1. Final APK Build Checklist (`unity-client`)
-1. Open `/Users/shloksharma/Desktop/DrillVR/unity-client` in **Unity 2022.3 LTS**.
+1. Open `unity-client` in **Unity 6 (6000.6.7f1)**.
 2. Run **DrillVR → Setup Milestone 8 Backend Integration** (ensures `M8_FullOnlineLoop.unity` is active in Build Settings and `InsecureHttpOption.AlwaysAllowed` is set).
 3. Click **DrillVR → Bake Milestone 2 Lighting** (or **Window → Rendering → Lighting → Generate Lighting**) and save the scene (`Cmd + S`).
 4. On `DrillSystems → ApiClient → Default Base Url`, set `http://<YOUR_MAC_LAN_IP>:4000` (find via `ipconfig getifaddr en0`).

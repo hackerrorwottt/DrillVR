@@ -119,7 +119,7 @@ namespace DrillVR.Interactions
 
         private bool IsSelectInputPressed()
         {
-#if UNITY_EDITOR
+#if UNITY_EDITOR || UNITY_WEBGL
             return Input.GetMouseButtonDown(0);
 #elif UNITY_ANDROID
             return Api.IsTriggerPressed;

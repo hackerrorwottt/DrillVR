@@ -1,6 +1,6 @@
 # DrillVR: AI-Driven Mobile VR Live Training Drills
 
-An immersive, low-cost, AI-driven mobile Virtual Reality training and evaluation system for live building emergency response drills, built with **Unity 2022.3 LTS (Google Cardboard XR)**, **Node.js 20+ Express**, **MySQL 8 (3NF)**, and a **Chart.js Instructor Command Dashboard**.
+An immersive, low-cost, AI-driven mobile Virtual Reality training and evaluation system for live building emergency response drills, built with **Unity 6 (6000.6.7f1, Google Cardboard XR)**, **Node.js 20+ Express**, **MySQL 8 (3NF)**, and a **Chart.js Instructor Command Dashboard**.
 
 > **Educational Prototype Disclaimer:** DrillVR is an academic prototype inspired by the problem statement *"Augmented/Virtual Reality system for the live training of troops"* (Ministry of Home Affairs, 2023, Smart Automation, Software). It contains **no weapons or combat content**. Simulation scores are for educational demonstration only and must not be presented as proof of real-world qualification. Augmented Reality (AR) is future scope only.
 
@@ -96,7 +96,7 @@ DrillVR delivers a standardized, accessible, software-driven VR training platfor
 +-----------------------------------------------------------------------------------+
 |                                     DrillVR                                       |
 +-----------------------------------------------------------------------------------+
-| Mobile VR Client    : Unity 2022.3 LTS (Built-in Pipeline, C#)                     |
+| Mobile VR Client    : Unity 6 (6000.6.7f1, Built-in Pipeline, C#)                  |
 | XR Subsystem        : Google Cardboard XR Plugin (#v1.30.0) + XR Management 4.5.4 |
 | AI & Navigation     : Unity AI Navigation (1.1.7) + NavMeshAgent FSM              |
 | Backend API         : Node.js 20+ / Express 4 / mysql2 / JWT / bcrypt             |
@@ -115,7 +115,7 @@ DrillVR follows a decoupled 4-tier architecture designed for low-latency simulat
 
 ```mermaid
 flowchart TB
-    subgraph MobileClient ["Mobile VR Client (Unity 2022.3 LTS)"]
+    subgraph MobileClient ["Mobile VR Client (Unity 6 / 6000.6.7f1)"]
         XR["Google Cardboard XR Rig\n(Stereoscopic Gyro Cam)"]
         GI["GazeInteractor\n(1.5s Dwell + Tap)"]
         MM["MissionManager\n(7-Step Coordinator)"]
@@ -542,11 +542,11 @@ Running `npm run db:seed` in `backend/` creates a pre-populated test environment
 
 | Role | Name | Email | Password | Seeded Profile & AI Difficulty Tier |
 |---|---|---|---|---|
-| **Instructor** | Dr. Vikram Sharma | `instructor@drillvr.edu` | `Instructor@123` | Full dashboard access, cohort analytics, weakest step detection |
+| **Instructor** | Dr. Vikram Rao | `instructor@drillvr.edu` | `Instructor@123` | Full dashboard access, cohort analytics, weakest step detection |
 | **Admin** | System Admin | `admin@drillvr.edu` | `Admin@123` | Master administrative privileges across all endpoints |
-| **Trainee** | Aarav Mehta | `aarav@drillvr.edu` | `Trainee@123` | **High Performer:** 5 sessions, avg score `94.2`, avg mistakes `1.2` → **Harder** (`1.35x` hazard speed) |
+| **Trainee** | Aarav Sharma | `aarav@drillvr.edu` | `Trainee@123` | **High Performer:** 5 sessions, avg score `94.2`, avg mistakes `1.2` → **Harder** (`1.35x` hazard speed) |
 | **Trainee** | Diya Patel | `diya@drillvr.edu` | `Trainee@123` | **Consistent Trainee:** 5 sessions, avg score `82.6`, avg mistakes `3.8` → **Normal** (`1.00x` hazard speed) |
-| **Trainee** | Kabir Rao | `kabir@drillvr.edu` | `Trainee@123` | **Struggling Trainee:** 5 sessions, avg score `58.4`, avg mistakes `6.8` → **Easier** (`0.70x` speed + forced hints) |
+| **Trainee** | Kabir Verma | `kabir@drillvr.edu` | `Trainee@123` | **Struggling Trainee:** 5 sessions, avg score `58.4`, avg mistakes `6.8` → **Easier** (`0.70x` speed + forced hints) |
 | **Trainee** | Meera Nair | `meera@drillvr.edu` | `Trainee@123` | **Developing Trainee:** 5 sessions, avg score `79.0`, avg mistakes `2.8` → **Normal** (`1.00x` hazard speed) |
 
 ---
@@ -572,7 +572,7 @@ flowchart LR
 | **Operating System** | macOS 12+, Ubuntu 20.04+, or Windows 10/11 | Development host |
 | **Node.js & npm** | Node `v20.x` or `v22.x`, npm `9+` | Installed on system PATH (`node -v`) |
 | **MySQL Database** | MySQL `8.0+` | Running locally or via Docker (`mysql --version`) |
-| **Unity Editor** | Unity `2022.3 LTS` (e.g. `2022.3.20f1`+) | Installed via Unity Hub |
+| **Unity Editor** | Unity `6000.6.7f1` (Unity 6) | Installed via Unity Hub |
 | **Unity Modules** | **Android Build Support** | Check *Android SDK & NDK Tools* + *OpenJDK* in Unity Hub |
 | **Mobile Device** *(for APK)* | Android 8.0+ (Oreo) phone | USB debugging enabled, Google Cardboard viewer |
 
@@ -601,7 +601,7 @@ Ensure the MySQL 8 service is running on your machine:
 #### 1.2 Configure Environment Variables
 Navigate to the `backend/` directory:
 ```bash
-cd /Users/shloksharma/Desktop/DrillVR/backend
+cd backend
 cp .env.example .env
 ```
 Open `.env` in an editor and configure your database credentials:
@@ -671,11 +671,8 @@ You can run, test, and score the entire VR drill directly in the Unity Editor us
 #### 2.1 Open the Project in Unity Hub
 1. Launch **Unity Hub**.
 2. Click **Add** → **Add project from disk**.
-3. Select the folder:
-   ```text
-   /Users/shloksharma/Desktop/DrillVR/unity-client
-   ```
-4. Choose **Unity 2022.3 LTS** as the Editor version.
+3. Select the `unity-client` folder in the project root.
+4. Choose **Unity 6 (6000.6.7f1)** as the Editor version.
 5. Click on the project to open it (allow Unity to import packages on first run).
 
 #### 2.2 Verify Project Settings & XR Management

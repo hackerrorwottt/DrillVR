@@ -26,6 +26,50 @@ describe('DrillVR REST API Integration Tests', () => {
     expect(res.body.status).toBe('ok');
   });
 
+  describe('CORS Configuration Tests', () => {
+    test('Allows requests with no origin (curl, mobile Cardboard APK, Unity Editor)', async () => {
+      const res = await request(app).get('/api/health');
+      expect(res.statusCode).toBe(200);
+      expect(res.headers['access-control-allow-origin']).toBeUndefined();
+    });
+
+    test('Allows requests from whitelisted dashboard origin http://localhost:8080 and handles preflight', async () => {
+      const preflight = await request(app)
+        .options('/api/sessions')
+        .set('Origin', 'http://localhost:8080')
+        .set('Access-Control-Request-Method', 'POST')
+        .set('Access-Control-Request-Headers', 'Content-Type, Authorization');
+
+      expect(preflight.statusCode).toBe(200);
+      expect(preflight.headers['access-control-allow-origin']).toBe('http://localhost:8080');
+      expect(preflight.headers['access-control-allow-methods']).toContain('POST');
+      expect(preflight.headers['access-control-allow-headers']).toContain('Authorization');
+
+      const actual = await request(app)
+        .get('/api/health')
+        .set('Origin', 'http://localhost:8080');
+
+      expect(actual.statusCode).toBe(200);
+      expect(actual.headers['access-control-allow-origin']).toBe('http://localhost:8080');
+    });
+
+    test('Rejects unknown origins by omitting Access-Control-Allow-Origin header without throwing error', async () => {
+      const res = await request(app)
+        .get('/api/health')
+        .set('Origin', 'http://malicious-website.com');
+
+      expect(res.statusCode).toBe(200);
+      expect(res.headers['access-control-allow-origin']).toBeUndefined();
+
+      const preflight = await request(app)
+        .options('/api/sessions')
+        .set('Origin', 'http://malicious-website.com')
+        .set('Access-Control-Request-Method', 'POST');
+
+      expect(preflight.headers['access-control-allow-origin']).toBeUndefined();
+    });
+  });
+
   test('POST /api/auth/register creates trainee and never returns password_hash', async () => {
     const res = await request(app)
       .post('/api/auth/register')

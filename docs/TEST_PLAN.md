@@ -27,7 +27,7 @@ This document defines the master test plan, verified automated test results, phy
 | **VR-03** | Android Client | Sustained frame rate ($\ge 30\,\text{FPS}$) under expanding smoke hazard | GPU/CPU maintains $\ge 30\,\text{FPS}$ floor without thermal throttling over 15-minute drill | **PENDING** | *To be measured on physical handsets using `FpsOverlay.cs` and recorded in Section 3.* |
 | **VR-04** | Android Client | Casualty AI NPC navigation in mobile runtime | 3 casualties navigate to Safe Assembly Zone via NavMesh without catching on doorway colliders | **PENDING** | *To be verified on physical device during drill run.* |
 | **E2E-01** | End-to-End | Full mobile-to-backend loop over local Wi-Fi | Phone completes drill, uploads session via LAN IP (`http://<IP>:4000`), visible on dashboard | **PENDING** | *To be verified by pointing phone `ApiClient` to laptop LAN IP (`172.20.10.8:4000`).* |
-| **E2E-02** | Offline Sync | Airplane mode drill completion and reconnection queue flush | Completed session saved to `pending_sessions.json`; flushed to MySQL when Wi-Fi restored | **PENDING** | *To be verified by toggling phone Airplane Mode during drill and verifying FIFO queue flush.* |
+| **E2E-02** | Offline Sync | Airplane mode drill completion and reconnection queue flush (Android Hardware) | Completed session saved to `pending_sessions.json`; flushed to MySQL when Wi-Fi restored | **PENDING** | *Applies exclusively to physical Android APK hardware (via Airplane Mode toggle). WebGL build buffers retries in-memory during the browser session.* |
 
 ---
 
@@ -43,8 +43,8 @@ Where $\overline{M}$ is the arithmetic mean of mistakes across the trainee's las
 
 | Trainee Profile | Historical Avg Mistakes | Target Tier | Multiplier | Extra Hints | Real Run Time (s) | Real Mistakes | Real Score | Verification Notes |
 |---|:---:|:---:|:---:|:---:|:---:|:---:|:---:|---|
-| **Diya Sharma**<br>`diya@drillvr.edu` | ~3.8 | `normal` | **1.00x** | No | *[PENDING]* | *[PENDING]* | *[PENDING]* | Run drill on phone; record debrief score. |
-| **Aarav Patel**<br>`aarav@drillvr.edu` | ~1.2 | `harder` | **1.35x** | No | *[PENDING]* | *[PENDING]* | *[PENDING]* | Verify smoke expands noticeably faster (1.35x). |
+| **Diya Patel**<br>`diya@drillvr.edu` | ~3.8 | `normal` | **1.00x** | No | *[PENDING]* | *[PENDING]* | *[PENDING]* | Run drill on phone; record debrief score. |
+| **Aarav Sharma**<br>`aarav@drillvr.edu` | ~1.2 | `harder` | **1.35x** | No | *[PENDING]* | *[PENDING]* | *[PENDING]* | Verify smoke expands noticeably faster (1.35x). |
 | **Kabir Verma**<br>`kabir@drillvr.edu` | ~6.8 | `easier` | **0.70x** | **Yes** | *[PENDING]* | *[PENDING]* | *[PENDING]* | Verify extra hint banners appear on HUD. |
 
 ---

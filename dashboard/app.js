@@ -71,7 +71,7 @@
     },
     {
       userId: 5,
-      name: 'Kabir Rao',
+      name: 'Kabir Verma',
       email: 'kabir@drillvr.edu',
       sessionsCount: 5,
       avgScore: 58.4,
@@ -87,26 +87,26 @@
   ];
 
   const SEEDED_SESSIONS = [
-    { id: 20, trainee: 'Aarav Mehta', userId: 3, scenario: 'Building Emergency Drill', score: 98.0, time: 142.5, mistakes: 1, rescued: '3/3', mult: 1.35, passed: true, weakest: 'None', date: 'Today 15:30' },
+    { id: 20, trainee: 'Aarav Sharma', userId: 3, scenario: 'Building Emergency Drill', score: 98.0, time: 142.5, mistakes: 1, rescued: '3/3', mult: 1.35, passed: true, weakest: 'None', date: 'Today 15:30' },
     { id: 19, trainee: 'Diya Patel', userId: 4, scenario: 'Building Emergency Drill', score: 88.0, time: 165.0, mistakes: 3, rescued: '3/3', mult: 1.00, passed: true, weakest: 'Assess Situation', date: 'Today 14:15' },
     { id: 18, trainee: 'Meera Nair', userId: 6, scenario: 'Building Emergency Drill', score: 85.0, time: 172.0, mistakes: 2, rescued: '3/3', mult: 1.00, passed: true, weakest: 'Equipment Selection', date: 'Today 12:45' },
-    { id: 17, trainee: 'Kabir Rao', userId: 5, scenario: 'Building Emergency Drill', score: 65.0, time: 210.0, mistakes: 6, rescued: '2/3', mult: 0.70, passed: true, weakest: 'Evacuate via Safe Route', date: 'Today 11:10' },
-    { id: 16, trainee: 'Aarav Mehta', userId: 3, scenario: 'Building Emergency Drill', score: 95.0, time: 148.0, mistakes: 1, rescued: '3/3', mult: 1.35, passed: true, weakest: 'None', date: 'Yesterday 16:20' },
+    { id: 17, trainee: 'Kabir Verma', userId: 5, scenario: 'Building Emergency Drill', score: 65.0, time: 210.0, mistakes: 6, rescued: '2/3', mult: 0.70, passed: true, weakest: 'Evacuate via Safe Route', date: 'Today 11:10' },
+    { id: 16, trainee: 'Aarav Sharma', userId: 3, scenario: 'Building Emergency Drill', score: 95.0, time: 148.0, mistakes: 1, rescued: '3/3', mult: 1.35, passed: true, weakest: 'None', date: 'Yesterday 16:20' },
     { id: 15, trainee: 'Diya Patel', userId: 4, scenario: 'Building Emergency Drill', score: 85.0, time: 170.0, mistakes: 4, rescued: '3/3', mult: 1.00, passed: true, weakest: 'Assess Situation', date: 'Yesterday 14:50' },
     { id: 14, trainee: 'Meera Nair', userId: 6, scenario: 'Building Emergency Drill', score: 81.0, time: 176.0, mistakes: 3, rescued: '3/3', mult: 1.00, passed: true, weakest: 'Equipment Selection', date: 'Yesterday 13:10' },
-    { id: 13, trainee: 'Kabir Rao', userId: 5, scenario: 'Building Emergency Drill', score: 58.0, time: 225.0, mistakes: 7, rescued: '2/3', mult: 0.70, passed: false, weakest: 'Evacuate via Safe Route', date: 'Yesterday 10:40' },
-    { id: 12, trainee: 'Aarav Mehta', userId: 3, scenario: 'Building Emergency Drill', score: 91.0, time: 155.0, mistakes: 1, rescued: '3/3', mult: 1.00, passed: true, weakest: 'None', date: '2 days ago' },
+    { id: 13, trainee: 'Kabir Verma', userId: 5, scenario: 'Building Emergency Drill', score: 58.0, time: 225.0, mistakes: 7, rescued: '2/3', mult: 0.70, passed: false, weakest: 'Evacuate via Safe Route', date: 'Yesterday 10:40' },
+    { id: 12, trainee: 'Aarav Sharma', userId: 3, scenario: 'Building Emergency Drill', score: 91.0, time: 155.0, mistakes: 1, rescued: '3/3', mult: 1.00, passed: true, weakest: 'None', date: '2 days ago' },
     { id: 11, trainee: 'Diya Patel', userId: 4, scenario: 'Building Emergency Drill', score: 80.0, time: 178.0, mistakes: 4, rescued: '3/3', mult: 1.00, passed: true, weakest: 'Assess Situation', date: '2 days ago' },
     { id: 10, trainee: 'Meera Nair', userId: 6, scenario: 'Building Emergency Drill', score: 78.0, time: 185.0, mistakes: 3, rescued: '3/3', mult: 1.00, passed: true, weakest: 'Equipment Selection', date: '2 days ago' },
-    { id: 9, trainee: 'Kabir Rao', userId: 5, scenario: 'Building Emergency Drill', score: 60.0, time: 220.0, mistakes: 7, rescued: '2/3', mult: 1.00, passed: true, weakest: 'Evacuate via Safe Route', date: '2 days ago' },
-    { id: 8, trainee: 'Aarav Mehta', userId: 3, scenario: 'Building Emergency Drill', score: 95.0, time: 150.0, mistakes: 1, rescued: '3/3', mult: 1.00, passed: true, weakest: 'None', date: '3 days ago' },
+    { id: 9, trainee: 'Kabir Verma', userId: 5, scenario: 'Building Emergency Drill', score: 60.0, time: 220.0, mistakes: 7, rescued: '2/3', mult: 1.00, passed: true, weakest: 'Evacuate via Safe Route', date: '2 days ago' },
+    { id: 8, trainee: 'Aarav Sharma', userId: 3, scenario: 'Building Emergency Drill', score: 95.0, time: 150.0, mistakes: 1, rescued: '3/3', mult: 1.00, passed: true, weakest: 'None', date: '3 days ago' },
     { id: 7, trainee: 'Diya Patel', userId: 4, scenario: 'Building Emergency Drill', score: 82.0, time: 172.0, mistakes: 4, rescued: '3/3', mult: 1.00, passed: true, weakest: 'Assess Situation', date: '3 days ago' },
     { id: 6, trainee: 'Meera Nair', userId: 6, scenario: 'Building Emergency Drill', score: 76.0, time: 190.0, mistakes: 3, rescued: '3/3', mult: 1.00, passed: true, weakest: 'Equipment Selection', date: '3 days ago' },
-    { id: 5, trainee: 'Kabir Rao', userId: 5, scenario: 'Building Emergency Drill', score: 55.0, time: 235.0, mistakes: 7, rescued: '2/3', mult: 1.00, passed: false, weakest: 'Evacuate via Safe Route', date: '3 days ago' },
-    { id: 4, trainee: 'Aarav Mehta', userId: 3, scenario: 'Building Emergency Drill', score: 92.0, time: 158.0, mistakes: 2, rescued: '3/3', mult: 1.00, passed: true, weakest: 'Equipment Selection', date: '4 days ago' },
+    { id: 5, trainee: 'Kabir Verma', userId: 5, scenario: 'Building Emergency Drill', score: 55.0, time: 235.0, mistakes: 7, rescued: '2/3', mult: 1.00, passed: false, weakest: 'Evacuate via Safe Route', date: '3 days ago' },
+    { id: 4, trainee: 'Aarav Sharma', userId: 3, scenario: 'Building Emergency Drill', score: 92.0, time: 158.0, mistakes: 2, rescued: '3/3', mult: 1.00, passed: true, weakest: 'Equipment Selection', date: '4 days ago' },
     { id: 3, trainee: 'Diya Patel', userId: 4, scenario: 'Building Emergency Drill', score: 78.0, time: 180.0, mistakes: 4, rescued: '3/3', mult: 1.00, passed: true, weakest: 'Equipment Selection', date: '4 days ago' },
     { id: 2, trainee: 'Meera Nair', userId: 6, scenario: 'Building Emergency Drill', score: 75.0, time: 192.0, mistakes: 3, rescued: '3/3', mult: 1.00, passed: true, weakest: 'Equipment Selection', date: '4 days ago' },
-    { id: 1, trainee: 'Kabir Rao', userId: 5, scenario: 'Building Emergency Drill', score: 52.0, time: 240.0, mistakes: 7, rescued: '1/3', mult: 1.00, passed: false, weakest: 'Evacuate via Safe Route', date: '4 days ago' },
+    { id: 1, trainee: 'Kabir Verma', userId: 5, scenario: 'Building Emergency Drill', score: 52.0, time: 240.0, mistakes: 7, rescued: '1/3', mult: 1.00, passed: false, weakest: 'Evacuate via Safe Route', date: '4 days ago' },
   ];
 
   const STEP_BOTTLENECKS = [
@@ -268,6 +268,160 @@
   // ---------------------------------------------------------------------------
   // 6. View Router (Sidebar Tab Switching)
   // ---------------------------------------------------------------------------
+  let unityDashboardInstance = null;
+  let unityDashboardLoading = false;
+
+  function loadUnityWebGLPlayer() {
+    if (unityDashboardInstance || unityDashboardLoading) return;
+
+    const canvas = document.getElementById('unity-dashboard-canvas');
+    const loadingEl = document.getElementById('unity-dashboard-loading');
+    const progressEl = document.getElementById('unity-dashboard-progress-bar');
+    const errorEl = document.getElementById('unity-dashboard-error');
+    const errorTitle = document.getElementById('unity-error-title');
+    const errorBody = document.getElementById('unity-error-body');
+    const fullscreenBtn = document.getElementById('unityFullscreenBtn');
+
+    if (!canvas) return;
+
+    canvas.addEventListener('click', () => {
+      canvas.focus();
+    });
+
+    function showMissingBuildState() {
+      if (loadingEl) loadingEl.style.display = 'none';
+      if (errorEl) {
+        if (errorTitle) errorTitle.textContent = 'Unity WebGL Build Not Found';
+        if (errorBody) {
+          errorBody.innerHTML = `
+            <p style="font-size: 0.85rem; color: var(--text-secondary); line-height: 1.5; margin-bottom: 16px;">
+              The WebAssembly build files have not been exported yet. Open the Unity Editor and execute the automated export pipeline:
+            </p>
+            <div style="background: rgba(2, 6, 23, 0.7); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: var(--radius-sm); padding: 10px; font-family: ui-monospace, monospace; font-size: 0.8rem; color: #38bdf8; margin-bottom: 16px;">
+              DrillVR &gt; Build WebGL for Dashboard
+            </div>
+            <p style="font-size: 0.75rem; color: var(--text-muted); margin: 0;">
+              Expected loader: <code>dashboard/unity-webgl/Build/unity-webgl.loader.js</code>
+            </p>
+          `;
+        }
+        errorEl.style.display = 'block';
+      }
+    }
+
+    function showRuntimeErrorState(errorText) {
+      if (loadingEl) loadingEl.style.display = 'none';
+      if (errorEl) {
+        if (errorTitle) errorTitle.textContent = 'Unity WebGL Runtime Error';
+        if (errorBody) {
+          const safeText = String(errorText || 'Unknown runtime error')
+            .replace(/&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;');
+          errorBody.innerHTML = `
+            <p style="font-size: 0.85rem; color: var(--text-secondary); line-height: 1.5; margin-bottom: 12px;">
+              The Unity WebGL engine encountered an error during runtime initialization:
+            </p>
+            <div style="background: rgba(2, 6, 23, 0.85); border: 1px solid rgba(239, 68, 68, 0.3); border-radius: var(--radius-sm); padding: 12px; font-family: ui-monospace, monospace; font-size: 0.78rem; color: #f87171; text-align: left; max-height: 160px; overflow-y: auto; white-space: pre-wrap; word-break: break-all; margin-bottom: 12px;">
+${safeText}
+            </div>
+            <p style="font-size: 0.75rem; color: var(--text-muted); margin: 0;">
+              Check the browser developer console (F12) for detailed call stack and WebAssembly logs.
+            </p>
+          `;
+        }
+        errorEl.style.display = 'block';
+      }
+    }
+
+    if (errorEl) errorEl.style.display = 'none';
+    if (loadingEl) loadingEl.style.display = 'block';
+    if (progressEl) progressEl.style.width = '0%';
+    unityDashboardLoading = true;
+
+    const buildUrl = 'unity-webgl/Build';
+    const buildName = 'unity-webgl';
+    const config = {
+      dataUrl: `${buildUrl}/${buildName}.data`,
+      frameworkUrl: `${buildUrl}/${buildName}.framework.js`,
+      codeUrl: `${buildUrl}/${buildName}.wasm`,
+      streamingAssetsUrl: 'unity-webgl/StreamingAssets',
+      companyName: 'DrillVRTeam',
+      productName: 'DrillVR',
+      productVersion: '2.4',
+      showBanner: (msg, type) => {
+        if (type === 'error') {
+          showRuntimeErrorState(msg);
+        }
+      },
+    };
+
+    const loaderScript = document.createElement('script');
+    loaderScript.src = `${buildUrl}/${buildName}.loader.js`;
+    loaderScript.onload = () => {
+      if (typeof createUnityInstance !== 'function') {
+        unityDashboardLoading = false;
+        showMissingBuildState();
+        if (loaderScript.parentNode) {
+          loaderScript.parentNode.removeChild(loaderScript);
+        }
+        return;
+      }
+
+      createUnityInstance(canvas, config, (progress) => {
+        if (progressEl) progressEl.style.width = `${Math.round(100 * progress)}%`;
+      }).then((instance) => {
+        unityDashboardInstance = instance;
+        unityDashboardLoading = false;
+        if (loadingEl) loadingEl.style.display = 'none';
+
+        // Update badges to active WASM state once loader and engine are running
+        const navBadge = document.getElementById('unity-nav-badge');
+        if (navBadge) {
+          navBadge.textContent = 'WASM';
+          navBadge.style.background = 'rgba(56, 189, 248, 0.2)';
+          navBadge.style.color = '#38bdf8';
+          navBadge.style.borderColor = 'rgba(56, 189, 248, 0.4)';
+        }
+        const headerBadge = document.getElementById('unity-header-badge');
+        if (headerBadge) {
+          headerBadge.textContent = 'WASM • Unity 6';
+          headerBadge.style.background = 'rgba(56, 189, 248, 0.15)';
+          headerBadge.style.color = '#38bdf8';
+          headerBadge.style.borderColor = 'rgba(56, 189, 248, 0.3)';
+        }
+        const headerSubtitle = document.getElementById('unity-header-subtitle');
+        if (headerSubtitle) {
+          headerSubtitle.textContent = 'Real Unity 6 simulation runtime (M8_FullOnlineLoop.unity) WebAssembly build. Direct client-side engine with gaze dwell and AI agents.';
+        }
+
+        if (fullscreenBtn) {
+          fullscreenBtn.onclick = () => {
+            instance.SetFullscreen(1);
+          };
+        }
+      }).catch((err) => {
+        unityDashboardLoading = false;
+        showRuntimeErrorState(err?.message || err || 'Unknown WebAssembly runtime error');
+        if (loaderScript.parentNode) {
+          loaderScript.parentNode.removeChild(loaderScript);
+        }
+        console.warn('[DrillVR Unity WebGL] Engine initialization error:', err);
+      });
+    };
+
+    loaderScript.onerror = () => {
+      unityDashboardLoading = false;
+      showMissingBuildState();
+      if (loaderScript.parentNode) {
+        loaderScript.parentNode.removeChild(loaderScript);
+      }
+      console.info('[DrillVR Unity WebGL] Build loader not found at ' + loaderScript.src + '. Build the project in Unity Editor (DrillVR > Build WebGL for Dashboard).');
+    };
+
+    document.body.appendChild(loaderScript);
+  }
+
   function switchView(viewName) {
     activeView = viewName;
 
@@ -295,7 +449,9 @@
     // Update Breadcrumb
     const breadcrumb = document.getElementById('currentViewBreadcrumb');
     if (breadcrumb) {
-      breadcrumb.textContent = viewName.charAt(0).toUpperCase() + viewName.slice(1);
+      breadcrumb.textContent = viewName === 'unity-webgl'
+        ? 'Unity WebGL Build'
+        : viewName.charAt(0).toUpperCase() + viewName.slice(1);
     }
 
     // Trigger view-specific rendering
@@ -305,6 +461,9 @@
     if (viewName === 'reports') renderReportTimestamp();
     if (viewName === 'simulation') {
       window.dispatchEvent(new CustomEvent('drillvr:view_switched', { detail: 'simulation' }));
+    }
+    if (viewName === 'unity-webgl') {
+      loadUnityWebGLPlayer();
     }
   }
 
@@ -425,10 +584,10 @@
     list.innerHTML = '';
 
     const activities = [
-      { text: '<strong>Aarav Mehta</strong> finished Run #20 with Grade S (98.0 pts)', time: '12m ago' },
+      { text: '<strong>Aarav Sharma</strong> finished Run #20 with Grade S (98.0 pts)', time: '12m ago' },
       { text: '<strong>Diya Patel</strong> finished Run #19 with Grade A (88.0 pts)', time: '48m ago' },
       { text: '<strong>Meera Nair</strong> cleared equipment cache with 2 mistakes', time: '2h ago' },
-      { text: '<strong>Kabir Rao</strong> evacuated 2/3 casualties (Safe route delay)', time: '3h ago' },
+      { text: '<strong>Kabir Verma</strong> evacuated 2/3 casualties (Safe route delay)', time: '3h ago' },
     ];
 
     activities.forEach((act) => {
@@ -898,7 +1057,7 @@
     if (previewBtn) {
       previewBtn.addEventListener('click', () => {
         isDemoMode = true;
-        showDashboard({ name: 'Dr. Vikram Sharma', role: 'Lead Instructor' });
+        showDashboard({ name: 'Dr. Vikram Rao', role: 'Lead Instructor' });
         showToast('Entered Instant Demo Mode (No backend required).', 'success');
       });
     }
@@ -944,7 +1103,7 @@
           // If offline, seamlessly fall back to demo preview
           isDemoMode = true;
           const fallbackUser = {
-            name: email ? email.split('@')[0].toUpperCase() : 'Dr. Vikram Sharma',
+            name: email ? email.split('@')[0].toUpperCase() : 'Dr. Vikram Rao',
             role: 'Lead Instructor (Demo)',
           };
           showDashboard(fallbackUser);
@@ -974,10 +1133,17 @@
       '6': 'scenarios',
       '7': 'reports',
       '8': 'settings',
+      '9': 'unity-webgl',
     };
 
     window.addEventListener('keydown', (e) => {
       if (['INPUT', 'TEXTAREA', 'SELECT'].includes(document.activeElement?.tagName)) {
+        return;
+      }
+      if (document.activeElement?.id === 'unity-dashboard-canvas' || e.target?.id === 'unity-dashboard-canvas') {
+        return;
+      }
+      if (e.key === 'Escape') {
         return;
       }
       if (e.metaKey || e.ctrlKey || e.altKey) {
@@ -1071,6 +1237,9 @@
     // Global Search Bar Keyboard Shortcut (⌘K / Ctrl+K)
     const globalSearch = document.getElementById('globalSearchInput');
     document.addEventListener('keydown', (e) => {
+      if (document.activeElement?.id === 'unity-dashboard-canvas' || e.target?.id === 'unity-dashboard-canvas') {
+        return;
+      }
       if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
         e.preventDefault();
         if (globalSearch) globalSearch.focus();
