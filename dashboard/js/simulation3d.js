@@ -926,8 +926,7 @@
           </p>
         </div>
         <div class="modal-footer">
-          <button class="btn btn-secondary mr-2" onclick="this.closest('#simDebriefModal').remove()">Close Preview</button>
-          <button class="btn btn-primary" onclick="window.DrillVRBridge.submitTestSessionExplicit()">Record Test Session (Evaluation)</button>
+          <button class="btn btn-primary" onclick="this.closest('#simDebriefModal').remove()">Close Preview</button>
         </div>
       </div>
     `;
