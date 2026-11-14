@@ -29,7 +29,7 @@ namespace DrillVR.Network
 
 #if UNITY_WEBGL && !UNITY_EDITOR
         [System.Runtime.InteropServices.DllImport("__Internal")]
-        private static extern void DrillVR_NotifyDrillEnded(float totalScore, int passed, float timeRemaining);
+        private static extern void DrillVR_NotifyDrillEnded(float totalScore, int passed, float timeRemaining, int saved);
 #endif
 
         private void Awake()
@@ -174,23 +174,30 @@ namespace DrillVR.Network
             }
 
             UpdateSyncStatus("Uploading drill session...");
-#if UNITY_WEBGL && !UNITY_EDITOR
-            try
-            {
-                DrillVR_NotifyDrillEnded(report.totalScore, report.passed ? 1 : 0, 0f);
-            }
-            catch (Exception) { }
-#endif
             apiClient.SaveSessionWithRetry(
                 payload,
                 (res) =>
                 {
                     UpdateSyncStatus($"Synced to MySQL (Session #{res.sessionId}). Updating adaptive difficulty...");
                     RefreshDifficultyFromServer();
+#if UNITY_WEBGL && !UNITY_EDITOR
+                    try
+                    {
+                        DrillVR_NotifyDrillEnded(report.totalScore, report.passed ? 1 : 0, 0f, 1);
+                    }
+                    catch (Exception) { }
+#endif
                 },
                 (queuedMsg) =>
                 {
                     UpdateSyncStatus(queuedMsg);
+#if UNITY_WEBGL && !UNITY_EDITOR
+                    try
+                    {
+                        DrillVR_NotifyDrillEnded(report.totalScore, report.passed ? 1 : 0, 0f, 0);
+                    }
+                    catch (Exception) { }
+#endif
                 }
             );
         }

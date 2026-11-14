@@ -26,11 +26,12 @@ mergeInto(LibraryManager.library, {
     window.dispatchEvent(new CustomEvent('drillvr:step_completed', { detail: detail }));
   },
 
-  DrillVR_NotifyDrillEnded: function (totalScore, passed, timeRemaining) {
+  DrillVR_NotifyDrillEnded: function (totalScore, passed, timeRemaining, saved) {
     var detail = {
       totalScore: totalScore,
       passed: passed === 1,
       timeRemaining: timeRemaining,
+      saved: saved === 1,
       timestamp: Date.now()
     };
     if (window.DrillVRBridge && typeof window.DrillVRBridge.onDrillEnded === 'function') {

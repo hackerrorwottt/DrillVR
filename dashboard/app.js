@@ -1285,6 +1285,21 @@ ${safeText}
         showToast('Signed out of command center.', 'info');
       });
     }
+
+    // Native Unity WebGL Bridge Event Listener (Outbound notification from DrillVRBridge.jslib)
+    // Only Unity's DrillBackendSync may POST sessions. The dashboard never POSTs sessions for the Unity build;
+    // it simply listens for drill_ended and refreshes cohort telemetry.
+    window.addEventListener('drillvr:drill_ended', (event) => {
+      const detail = event.detail || {};
+      console.log('[DrillVR Bridge] drill_ended event received:', detail);
+      const score = Math.round(detail.totalScore || 0);
+      if (detail.saved) {
+        showToast(`Simulation drill finished (Score: ${score}). Telemetry saved to database.`, 'success');
+      } else {
+        showToast(`Simulation drill finished (Score: ${score}). Buffered in local queue.`, 'info');
+      }
+      loadDashboardData();
+    });
   }
 
   // ---------------------------------------------------------------------------
