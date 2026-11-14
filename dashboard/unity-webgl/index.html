@@ -128,16 +128,19 @@
       var warningBanner = document.querySelector("#unity-warning");
 
       function unityShowBanner(msg, type) {
-        warningBanner.innerHTML = msg;
-        warningBanner.style.display = 'block';
+        if (type === 'error') {
+          warningBanner.innerHTML = msg;
+          warningBanner.style.display = 'block';
+        }
       }
 
       var buildUrl = "Build";
-      var loaderUrl = buildUrl + "/unity-webgl.loader.js";
+      var buildName = "unity-webgl";
+      var loaderUrl = buildUrl + "/" + buildName + ".loader.js";
       var config = {
-        dataUrl: buildUrl + "/unity-webgl.data",
-        frameworkUrl: buildUrl + "/unity-webgl.framework.js",
-        codeUrl: buildUrl + "/unity-webgl.wasm",
+        dataUrl: buildUrl + "/" + buildName + ".data",
+        frameworkUrl: buildUrl + "/" + buildName + ".framework.js",
+        codeUrl: buildUrl + "/" + buildName + ".wasm",
         streamingAssetsUrl: "StreamingAssets",
         companyName: "DrillVRTeam",
         productName: "DrillVR",
@@ -157,12 +160,12 @@
           };
         }).catch(function (err) {
           loadingBar.style.display = "none";
-          unityShowBanner("<strong>WebGL Build Incomplete</strong><br><br>The build loader was found but WASM binaries could not load.<br><small>" + err + "</small>");
+          unityShowBanner("<strong>WebGL Build Incomplete</strong><br><br>The build loader was found but WASM binaries could not load.<br><small>" + err + "</small>", "error");
         });
       };
       script.onerror = function () {
         loadingBar.style.display = "none";
-        unityShowBanner("<strong>Unity WebGL Build Not Found</strong><br><br>To generate the build files, open the project in Unity 6 and run:<br><code>DrillVR &gt; Build WebGL for Dashboard</code><br><br>Expected location: <code>dashboard/unity-webgl/Build/unity-webgl.loader.js</code>");
+        unityShowBanner("<strong>Unity WebGL Build Not Found</strong><br><br>Expected build loader at: <code>dashboard/unity-webgl/Build/" + buildName + ".loader.js</code>.<br><br>Open the project in Unity 6 and run:<br><code>DrillVR &gt; Build WebGL for Dashboard</code>", "error");
       };
       document.body.appendChild(script);
     </script>
