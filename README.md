@@ -1,6 +1,6 @@
 # DrillVR: AI-Driven Mobile VR Live Training Drills
 
-An immersive, low-cost, AI-driven mobile Virtual Reality training and evaluation system for live building emergency response drills, built with **Unity 2022.3 LTS (Google Cardboard XR)**, **Node.js 20+ Express**, **MySQL 8 (3NF)**, and a **Chart.js Instructor Command Dashboard**.
+An immersive, low-cost, AI-driven mobile Virtual Reality training and evaluation system for live building emergency response drills, built with **Unity 6 (6000.6.7f1, Google Cardboard XR)**, **Node.js 20+ Express**, **MySQL 8 (3NF)**, and a **Chart.js Instructor Command Dashboard**.
 
 > **Educational Prototype Disclaimer:** DrillVR is an academic prototype inspired by the problem statement *"Augmented/Virtual Reality system for the live training of troops"* (Ministry of Home Affairs, 2023, Smart Automation, Software). It contains **no weapons or combat content**. Simulation scores are for educational demonstration only and must not be presented as proof of real-world qualification. Augmented Reality (AR) is future scope only.
 
@@ -96,7 +96,7 @@ DrillVR delivers a standardized, accessible, software-driven VR training platfor
 +-----------------------------------------------------------------------------------+
 |                                     DrillVR                                       |
 +-----------------------------------------------------------------------------------+
-| Mobile VR Client    : Unity 2022.3 LTS (Built-in Pipeline, C#)                     |
+| Mobile VR Client    : Unity 6 (6000.6.7f1, Built-in Pipeline, C#)                  |
 | XR Subsystem        : Google Cardboard XR Plugin (#v1.30.0) + XR Management 4.5.4 |
 | AI & Navigation     : Unity AI Navigation (1.1.7) + NavMeshAgent FSM              |
 | Backend API         : Node.js 20+ / Express 4 / mysql2 / JWT / bcrypt             |
@@ -115,7 +115,7 @@ DrillVR follows a decoupled 4-tier architecture designed for low-latency simulat
 
 ```mermaid
 flowchart TB
-    subgraph MobileClient ["Mobile VR Client (Unity 2022.3 LTS)"]
+    subgraph MobileClient ["Mobile VR Client (Unity 6 / 6000.6.7f1)"]
         XR["Google Cardboard XR Rig\n(Stereoscopic Gyro Cam)"]
         GI["GazeInteractor\n(1.5s Dwell + Tap)"]
         MM["MissionManager\n(7-Step Coordinator)"]
@@ -572,7 +572,7 @@ flowchart LR
 | **Operating System** | macOS 12+, Ubuntu 20.04+, or Windows 10/11 | Development host |
 | **Node.js & npm** | Node `v20.x` or `v22.x`, npm `9+` | Installed on system PATH (`node -v`) |
 | **MySQL Database** | MySQL `8.0+` | Running locally or via Docker (`mysql --version`) |
-| **Unity Editor** | Unity `2022.3 LTS` (e.g. `2022.3.20f1`+) | Installed via Unity Hub |
+| **Unity Editor** | Unity `6000.6.7f1` (Unity 6) | Installed via Unity Hub |
 | **Unity Modules** | **Android Build Support** | Check *Android SDK & NDK Tools* + *OpenJDK* in Unity Hub |
 | **Mobile Device** *(for APK)* | Android 8.0+ (Oreo) phone | USB debugging enabled, Google Cardboard viewer |
 
@@ -675,7 +675,7 @@ You can run, test, and score the entire VR drill directly in the Unity Editor us
    ```text
    /Users/shloksharma/Desktop/DrillVR/unity-client
    ```
-4. Choose **Unity 2022.3 LTS** as the Editor version.
+4. Choose **Unity 6 (6000.6.7f1)** as the Editor version.
 5. Click on the project to open it (allow Unity to import packages on first run).
 
 #### 2.2 Verify Project Settings & XR Management
