@@ -278,9 +278,57 @@
     const loadingEl = document.getElementById('unity-dashboard-loading');
     const progressEl = document.getElementById('unity-dashboard-progress-bar');
     const errorEl = document.getElementById('unity-dashboard-error');
+    const errorTitle = document.getElementById('unity-error-title');
+    const errorBody = document.getElementById('unity-error-body');
     const fullscreenBtn = document.getElementById('unityFullscreenBtn');
 
     if (!canvas) return;
+
+    function showMissingBuildState() {
+      if (loadingEl) loadingEl.style.display = 'none';
+      if (errorEl) {
+        if (errorTitle) errorTitle.textContent = 'Unity WebGL Build Not Found';
+        if (errorBody) {
+          errorBody.innerHTML = `
+            <p style="font-size: 0.85rem; color: var(--text-secondary); line-height: 1.5; margin-bottom: 16px;">
+              The WebAssembly build files have not been exported yet. Open the Unity Editor and execute the automated export pipeline:
+            </p>
+            <div style="background: rgba(2, 6, 23, 0.7); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: var(--radius-sm); padding: 10px; font-family: ui-monospace, monospace; font-size: 0.8rem; color: #38bdf8; margin-bottom: 16px;">
+              DrillVR &gt; Build WebGL for Dashboard
+            </div>
+            <p style="font-size: 0.75rem; color: var(--text-muted); margin: 0;">
+              Expected loader: <code>dashboard/unity-webgl/Build/unity-webgl.loader.js</code>
+            </p>
+          `;
+        }
+        errorEl.style.display = 'block';
+      }
+    }
+
+    function showRuntimeErrorState(errorText) {
+      if (loadingEl) loadingEl.style.display = 'none';
+      if (errorEl) {
+        if (errorTitle) errorTitle.textContent = 'Unity WebGL Runtime Error';
+        if (errorBody) {
+          const safeText = String(errorText || 'Unknown runtime error')
+            .replace(/&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;');
+          errorBody.innerHTML = `
+            <p style="font-size: 0.85rem; color: var(--text-secondary); line-height: 1.5; margin-bottom: 12px;">
+              The Unity WebGL engine encountered an error during runtime initialization:
+            </p>
+            <div style="background: rgba(2, 6, 23, 0.85); border: 1px solid rgba(239, 68, 68, 0.3); border-radius: var(--radius-sm); padding: 12px; font-family: ui-monospace, monospace; font-size: 0.78rem; color: #f87171; text-align: left; max-height: 160px; overflow-y: auto; white-space: pre-wrap; word-break: break-all; margin-bottom: 12px;">
+${safeText}
+            </div>
+            <p style="font-size: 0.75rem; color: var(--text-muted); margin: 0;">
+              Check the browser developer console (F12) for detailed call stack and WebAssembly logs.
+            </p>
+          `;
+        }
+        errorEl.style.display = 'block';
+      }
+    }
 
     if (errorEl) errorEl.style.display = 'none';
     if (loadingEl) loadingEl.style.display = 'block';
@@ -298,8 +346,8 @@
       productName: 'DrillVR',
       productVersion: '2.4',
       showBanner: (msg, type) => {
-        if (type === 'error' && errorEl) {
-          errorEl.style.display = 'block';
+        if (type === 'error') {
+          showRuntimeErrorState(msg);
         }
       },
     };
@@ -309,8 +357,10 @@
     loaderScript.onload = () => {
       if (typeof createUnityInstance !== 'function') {
         unityDashboardLoading = false;
-        if (loadingEl) loadingEl.style.display = 'none';
-        if (errorEl) errorEl.style.display = 'block';
+        showMissingBuildState();
+        if (loaderScript.parentNode) {
+          loaderScript.parentNode.removeChild(loaderScript);
+        }
         return;
       }
 
@@ -320,6 +370,27 @@
         unityDashboardInstance = instance;
         unityDashboardLoading = false;
         if (loadingEl) loadingEl.style.display = 'none';
+
+        // Update badges to active WASM state once loader and engine are running
+        const navBadge = document.getElementById('unity-nav-badge');
+        if (navBadge) {
+          navBadge.textContent = 'WASM';
+          navBadge.style.background = 'rgba(56, 189, 248, 0.2)';
+          navBadge.style.color = '#38bdf8';
+          navBadge.style.borderColor = 'rgba(56, 189, 248, 0.4)';
+        }
+        const headerBadge = document.getElementById('unity-header-badge');
+        if (headerBadge) {
+          headerBadge.textContent = 'WASM • Unity 6';
+          headerBadge.style.background = 'rgba(56, 189, 248, 0.15)';
+          headerBadge.style.color = '#38bdf8';
+          headerBadge.style.borderColor = 'rgba(56, 189, 248, 0.3)';
+        }
+        const headerSubtitle = document.getElementById('unity-header-subtitle');
+        if (headerSubtitle) {
+          headerSubtitle.textContent = 'Real Unity 6 simulation runtime (M8_FullOnlineLoop.unity) WebAssembly build. Direct client-side engine with gaze dwell and AI agents.';
+        }
+
         if (fullscreenBtn) {
           fullscreenBtn.onclick = () => {
             instance.SetFullscreen(1);
@@ -327,16 +398,20 @@
         }
       }).catch((err) => {
         unityDashboardLoading = false;
-        if (loadingEl) loadingEl.style.display = 'none';
-        if (errorEl) errorEl.style.display = 'block';
+        showRuntimeErrorState(err?.message || err || 'Unknown WebAssembly runtime error');
+        if (loaderScript.parentNode) {
+          loaderScript.parentNode.removeChild(loaderScript);
+        }
         console.warn('[DrillVR Unity WebGL] Engine initialization error:', err);
       });
     };
 
     loaderScript.onerror = () => {
       unityDashboardLoading = false;
-      if (loadingEl) loadingEl.style.display = 'none';
-      if (errorEl) errorEl.style.display = 'block';
+      showMissingBuildState();
+      if (loaderScript.parentNode) {
+        loaderScript.parentNode.removeChild(loaderScript);
+      }
       console.info('[DrillVR Unity WebGL] Build loader not found at ' + loaderScript.src + '. Build the project in Unity Editor (DrillVR > Build WebGL for Dashboard).');
     };
 
