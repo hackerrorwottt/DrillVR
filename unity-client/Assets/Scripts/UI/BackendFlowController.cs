@@ -43,6 +43,12 @@ namespace DrillVR.UI
         [SerializeField] private GazeButton loadActiveScenarioButton;
 
         private string _selectedScenarioCode = "building_emergency_v1";
+        private bool _isBusy = false;
+
+        private static readonly Color ColorNormal = new Color(0.85f, 0.85f, 0.85f);
+        private static readonly Color ColorSuccess = new Color(0.29f, 0.87f, 0.50f);
+        private static readonly Color ColorWarning = new Color(0.98f, 0.80f, 0.08f);
+        private static readonly Color ColorError = new Color(0.97f, 0.44f, 0.44f);
 
         private void Awake()
         {
@@ -111,11 +117,12 @@ namespace DrillVR.UI
 
         private void HandleCustomLogin()
         {
+            if (_isBusy) return;
             string email = emailInput != null ? emailInput.text.Trim() : string.Empty;
             string password = passwordInput != null ? passwordInput.text : string.Empty;
             if (string.IsNullOrEmpty(email) || string.IsNullOrEmpty(password))
             {
-                SetAuthStatus("Enter email and password, or tap a preset login.");
+                SetAuthStatus("Enter email and password, or tap a preset login.", ColorWarning);
                 return;
             }
             LoginWithCredentials(email, password);
@@ -123,6 +130,7 @@ namespace DrillVR.UI
 
         private void HandleCustomRegister()
         {
+            if (_isBusy) return;
             ApplyBaseUrlFromInput();
             string nameVal = nameInput != null && !string.IsNullOrWhiteSpace(nameInput.text)
                 ? nameInput.text.Trim()
@@ -134,19 +142,38 @@ namespace DrillVR.UI
                 ? passwordInput.text
                 : "Trainee@123";
 
+            _isBusy = true;
             SetAuthStatus($"Registering {emailVal}...");
             apiClient.Register(nameVal, emailVal, passVal,
-                (res) => OnAuthenticated(res),
-                (err) => SetAuthStatus($"Register failed: {err}"));
+                (res) =>
+                {
+                    _isBusy = false;
+                    OnAuthenticated(res);
+                },
+                (err) =>
+                {
+                    _isBusy = false;
+                    SetAuthStatus($"Register failed: {err}", ColorError);
+                });
         }
 
         private void LoginWithCredentials(string email, string password)
         {
+            if (_isBusy) return;
+            _isBusy = true;
             ApplyBaseUrlFromInput();
             SetAuthStatus($"Signing in as {email}...");
             apiClient.Login(email, password,
-                (res) => OnAuthenticated(res),
-                (err) => SetAuthStatus($"Login failed: {err}"));
+                (res) =>
+                {
+                    _isBusy = false;
+                    OnAuthenticated(res);
+                },
+                (err) =>
+                {
+                    _isBusy = false;
+                    SetAuthStatus($"Login failed: {err}", ColorError);
+                });
         }
 
         private void OnAuthenticated(AuthResponse res)
@@ -234,11 +261,35 @@ namespace DrillVR.UI
             }
         }
 
-        private void SetAuthStatus(string message)
+        private void SetAuthStatus(string message, Color? overrideColor = null)
         {
             if (authStatusText != null)
             {
                 authStatusText.text = message;
+                if (overrideColor.HasValue)
+                {
+                    authStatusText.color = overrideColor.Value;
+                }
+                else if (message.IndexOf("failed", StringComparison.OrdinalIgnoreCase) >= 0 ||
+                         message.IndexOf("error", StringComparison.OrdinalIgnoreCase) >= 0)
+                {
+                    authStatusText.color = ColorError;
+                }
+                else if (message.IndexOf("signing", StringComparison.OrdinalIgnoreCase) >= 0 ||
+                         message.IndexOf("registering", StringComparison.OrdinalIgnoreCase) >= 0 ||
+                         message.IndexOf("loading", StringComparison.OrdinalIgnoreCase) >= 0)
+                {
+                    authStatusText.color = ColorWarning;
+                }
+                else if (message.IndexOf("success", StringComparison.OrdinalIgnoreCase) >= 0 ||
+                         message.IndexOf("signed in", StringComparison.OrdinalIgnoreCase) >= 0)
+                {
+                    authStatusText.color = ColorSuccess;
+                }
+                else
+                {
+                    authStatusText.color = ColorNormal;
+                }
             }
         }
     }
