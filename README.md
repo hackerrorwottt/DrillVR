@@ -1,4 +1,4 @@
-# DrillVR: AI-Driven Mobile VR Live Training Drills
+# DrillVR: AI-Driven VR Live Training Drills
 
 [![Live Demo on Netlify](https://img.shields.io/badge/Live%20Demo-Netlify-00C7B7?style=for-the-badge&logo=netlify&logoColor=white)](https://drillvr-simulation.netlify.app)
 [![GitHub Repository](https://img.shields.io/badge/GitHub-Repository-181717?style=for-the-badge&logo=github&logoColor=white)](https://github.com/hackerrorwottt/DrillVR)
@@ -6,7 +6,7 @@
 > 🌐 **Live Web Application:** [https://drillvr-simulation.netlify.app](https://drillvr-simulation.netlify.app)  
 > Interactive Instructor Command Dashboard with real-time 3D simulation telemetry, cohort analytics, and adaptive difficulty evaluation.
 
-An immersive, low-cost, AI-driven mobile Virtual Reality training and evaluation system for live building emergency response drills, built with **Unity 6 (6000.6.7f1, Google Cardboard XR)**, **Node.js 20+ Express**, **MySQL 8 (3NF)**, and a **Chart.js Instructor Command Dashboard**.
+An immersive, low-cost, AI-driven Virtual Reality (VR) training and evaluation system for live building emergency response drills, built with **Unity 6 (6000.6.7f1)**, **Node.js 20+ Express**, **MySQL 8 (3NF)**, and a **Chart.js Instructor Command Dashboard**.
 
 > **Educational Prototype Disclaimer:** DrillVR is an academic prototype inspired by the problem statement *"Augmented/Virtual Reality system for the live training of troops"* (Ministry of Home Affairs, 2023, Smart Automation, Software). It contains **no weapons or combat content**. Simulation scores are for educational demonstration only and must not be presented as proof of real-world qualification. Augmented Reality (AR) is future scope only.
 
@@ -19,7 +19,7 @@ An immersive, low-cost, AI-driven mobile Virtual Reality training and evaluation
 4. [Tech Stack](#tech-stack)
 5. [System Architecture & Data Flow](#system-architecture--data-flow)
 6. [Subsystems Deep-Dive](#subsystems-deep-dive)
-   - [1. Mobile VR Client & Gaze Interaction](#1-mobile-vr-client--gaze-interaction)
+   - [1. VR Client & Gaze Interaction](#1-vr-client--gaze-interaction)
    - [2. Autonomous AI & Behavioral Simulation](#2-autonomous-ai--behavioral-simulation)
    - [3. Deterministic Scoring & Assessment Engine](#3-deterministic-scoring--assessment-engine)
    - [4. Backend, 3NF Database & Offline Resilience](#4-backend-3nf-database--offline-resilience)
@@ -32,8 +32,8 @@ An immersive, low-cost, AI-driven mobile Virtual Reality training and evaluation
 12. [Comprehensive "How to Run" Guide](#comprehensive-how-to-run-guide)
     - [Prerequisites](#prerequisites)
     - [Part 1: Backend, Database & Instructor Dashboard](#part-1-backend-database--instructor-dashboard)
-    - [Part 2: Unity Editor Test Mode (No Phone Needed)](#part-2-unity-editor-test-mode-no-phone-needed)
-    - [Part 3: Android Physical Phone + Google Cardboard APK](#part-3-android-physical-phone--google-cardboard-apk)
+    - [Part 2: Unity Editor Test Mode (Desktop Simulation)](#part-2-unity-editor-test-mode-desktop-simulation)
+    - [Part 3: VR Standalone & Headset Build](#part-3-vr-standalone--headset-build)
     - [Part 4: Offline Queue & Resilience Testing](#part-4-offline-queue--resilience-testing)
     - [Part 5: Troubleshooting & Common Gotchas](#part-5-troubleshooting--common-gotchas)
 13. [Verification, Testing & Performance Benchmarks](#verification-testing--performance-benchmarks)
@@ -53,7 +53,7 @@ In civil defense, emergency services, and troop base security, regular building 
 - **Prohibitive Hardware Barrier:** Commercial enterprise and PC VR solutions (e.g., Meta Quest 3/Pro or HTC Vive Focus 3, typically retailing at ~$500 to $1,500+ USD MSRP) require dedicated headset hardware and high-spec computing that can be cost-prohibitive for large-scale institutional rollouts across distributed barracks or training academies.
 
 ### The DrillVR Solution
-DrillVR delivers a standardized, accessible, software-driven VR training platform running on **consumer Android smartphones (Android 8.0+, typically ~$120–$250 USD / ~₹10,000–₹20,000 INR)** paired with **Google Cardboard V2 viewers (typically ~$5–$15 USD / ~₹400–₹1,200 INR)**. Trainees experience an immersive, stereoscopic emergency response drill that adapts dynamically to their performance, while instructors supervise cohort metrics via a centralized web dashboard powered by a normalized 3NF MySQL database.
+DrillVR delivers a standardized, accessible, software-driven VR training platform. Trainees experience an immersive, stereoscopic emergency response drill that adapts dynamically to their performance, while instructors supervise cohort metrics via a centralized web dashboard powered by a normalized 3NF MySQL database.
 
 ---
 
@@ -61,9 +61,9 @@ DrillVR delivers a standardized, accessible, software-driven VR training platfor
 
 | Challenge | Traditional Approach | DrillVR Innovation |
 |---|---|---|
-| **Hardware Accessibility** | Commercial standalone/PC VR headsets (~$500–$1,500+ USD MSRP) | Low-cost Cardboard viewer (~$5–$15 USD) using trainee smartphones with Built-in Render Pipeline optimized for mobile GPUs |
+| **Hardware Accessibility** | Commercial enterprise/PC VR headsets (~$500–$1,500+ USD MSRP) | Accessible, standardized VR client with lightweight render pipeline and WebGL in-browser simulation |
 | **Motion Sickness (Cybersickness)** | Smooth analog stick locomotion causing severe vestibular-ocular mismatch | Instantaneous comfort teleportation to discrete floor pads with zero rotational acceleration |
-| **Hands-Free Mobile Interaction** | Dual 6-DOF tracked controllers | Gaze reticle + 1.5s radial dwell ring timer + single-tap capacitive screen touch |
+| **Hands-Free VR Interaction** | Dual 6-DOF tracked controllers | Gaze reticle + 1.5s radial dwell ring timer + single-tap trigger interaction |
 | **Static Drills** | Scripted, identical hazard spread | Dynamic AI: `HazardSystem` smoke expansion scales with trainee skill; `CasualtyAI` NPCs flee danger autonomously |
 | **Subjective Evaluation** | Instructor clipboard notes | Granular per-step execution telemetry (tracking step duration in decimal seconds, mistake counts, and hazard exposure times); deterministic multi-attribute scoring |
 | **Field Connectivity Gaps** | Cloud-dependent systems fail in basements / remote sites | Persistent local queue (`pending_sessions.json`) with automatic FIFO sync on reconnection |
@@ -73,11 +73,11 @@ DrillVR delivers a standardized, accessible, software-driven VR training platfor
 
 ## Course Requirements Demonstrated
 
-1. **Mobile VR Application Development (Unity 3D):**
-   - Stereoscopic rendering via Google Cardboard XR SDK (`com.google.xr.cardboard` pinned at `#v1.30.0`).
-   - Hands-free gaze interaction with dynamic reticle and `1.5s` radial fill dwell timer, alongside single-tap screen touch support.
+1. **VR Application Development (Unity 3D):**
+   - Stereoscopic rendering and WebGL in-browser simulation built on Unity 6.
+   - Hands-free gaze interaction with dynamic reticle and `1.5s` radial fill dwell timer, alongside single-tap trigger support.
    - Comfortable point-and-teleport locomotion via dedicated floor pads with parabolic gaze arc.
-   - Low-draw-call, mobile-optimized environment using Unity 3D primitives, baked lightmaps, ambient audio, and a live in-VR FPS counter targeting a minimum sustained budget of $\ge 30\,\text{FPS}$ (frame budget: $\le 33.3\,\text{ms/frame}$; physical handset measurements to be recorded via `FpsOverlay.cs`).
+   - Low-draw-call, optimized environment using Unity 3D primitives, baked lightmaps, ambient audio, and a live in-VR FPS counter targeting a minimum sustained budget of $\ge 30\,\text{FPS}$ (frame budget: $\le 33.3\,\text{ms/frame}$; measurements recorded via `FpsOverlay.cs`).
    - Seamless Editor test harness: mouse look (holding Right Mouse Button or toggling cursor lock with `L`), keyboard WASD walking, and left-click interaction.
 
 2. **Basic AI Inside VR:**
@@ -102,14 +102,14 @@ DrillVR delivers a standardized, accessible, software-driven VR training platfor
 +-----------------------------------------------------------------------------------+
 |                                     DrillVR                                       |
 +-----------------------------------------------------------------------------------+
-| Mobile VR Client    : Unity 6 (6000.6.7f1, Built-in Pipeline, C#)                  |
-| XR Subsystem        : Google Cardboard XR Plugin (#v1.30.0) + XR Management 4.5.4 |
+| VR Client           : Unity 6 (6000.6.7f1, Built-in Pipeline, C#)                  |
+| XR Subsystem        : XR Management & Stereoscopic VR Rig                          |
 | AI & Navigation     : Unity AI Navigation (1.1.7) + NavMeshAgent FSM              |
 | Backend API         : Node.js 20+ / Express 4 / mysql2 / JWT / bcrypt             |
 | Relational Database : MySQL 8.0+ (3NF Normalization, 5 Tables)                    |
 | Testing Suite       : Jest 29+ & Supertest 7+                                     |
 | Instructor Web UI   : HTML5 / CSS3 (Dark Theme) / Vanilla JS / Chart.js 4.4.4     |
-| Target Deployment   : Android 8.0+ (API 26-34), ARM64, Google Cardboard           |
+| Target Deployment   : Cross-Platform VR & WebGL in-browser runtime                 |
 +-----------------------------------------------------------------------------------+
 ```
 
@@ -121,8 +121,8 @@ DrillVR follows a decoupled 4-tier architecture designed for low-latency simulat
 
 ```mermaid
 flowchart TB
-    subgraph MobileClient ["Mobile VR Client (Unity 6 / 6000.6.7f1)"]
-        XR["Google Cardboard XR Rig\n(Stereoscopic Gyro Cam)"]
+    subgraph VRClient ["VR Client (Unity 6 / 6000.6.7f1)"]
+        XR["Stereoscopic VR Rig\n(Gyro Cam)"]
         GI["GazeInteractor\n(1.5s Dwell + Tap)"]
         MM["MissionManager\n(7-Step Coordinator)"]
         AI["CasualtyAI (NavMesh FSM)\n+ HazardSystem"]
@@ -205,14 +205,14 @@ sequenceDiagram
 
 ## Subsystems Deep-Dive
 
-### 1. Mobile VR Client & Gaze Interaction
+### 1. VR Client & Gaze Interaction
 
 #### Gaze Reticle & Dwell Pipeline
 - **Reticle Raycasting:** A world-space camera ray shoots forward from the center of the viewport (`GazeInteractor.cs`).
 - **Interaction Target:** When colliding with any collider implementing `Interactable.cs`, a circular progress ring begins to lerp:
   $$\text{Dwell Fill} = \frac{\Delta t_{\text{gazing}}}{1.5\,\text{seconds}}$$
 - **Visual Feedback:** The reticle smoothly scales up and changes color from white to high-contrast cyan, giving intuitive feedback without obscuring the environment.
-- **Single-Tap Acceleration:** Trainees can bypass the 1.5s timer by pressing the Google Cardboard capacitive trigger or tapping the phone screen, immediately invoking `OnInteract()`.
+- **Single-Tap Acceleration:** Trainees can bypass the 1.5s timer by pressing the trigger or click input, immediately invoking `OnInteract()`.
 
 #### Comfort Point-and-Teleport Locomotion
 - To eliminate simulator sickness caused by vestibular-ocular disparity, smooth locomotion is strictly disabled in VR mode.
@@ -351,7 +351,7 @@ The Instructor Command Dashboard is a lightweight, zero-build single-page applic
 DrillVR/
 ├── unity-client/
 │   ├── Packages/
-│   │   └── manifest.json               # Pinned Cardboard XR & AI Navigation packages
+│   │   └── manifest.json               # Pinned XR & AI Navigation packages
 │   └── Assets/
 │       ├── Editor/                     # Automated scene & ScriptableObject builders (M1–M8)
 │       │   ├── Milestone1Setup.cs      # XR bootstrap & reticle test scene
@@ -398,7 +398,7 @@ DrillVR/
 └── docs/
     ├── ARCHITECTURE_DIAGRAMS.md        # System architecture, CasualtyAI FSM, 7-step sequence diagrams
     ├── TEST_PLAN.md                    # Master test-case matrix, AI difficulty matrix, FPS logs
-    └── DEMO_AND_VIVA_GUIDE.md          # APK checklist, 3-5 min video shotlist, viva Q&A notes
+    └── DEMO_AND_VIVA_GUIDE.md          # Deployment checklist, 3-5 min video shotlist, viva Q&A notes
 ```
 
 ---
@@ -566,7 +566,7 @@ flowchart LR
     A["MySQL 8 Database\n(:3306)"] --> B["Node.js Express API\n(:4000)"]
     B --> C["Instructor Dashboard\n(Browser :4000/dashboard)"]
     B --> D["Unity Editor\n(Play Mode / WASD)"]
-    B --> E["Android Cardboard APK\n(Physical Phone via Wi-Fi)"]
+    B --> E["VR Standalone Build\n(Connected via Wi-Fi)"]
 ```
 
 ---
@@ -579,8 +579,8 @@ flowchart LR
 | **Node.js & npm** | Node `v20.x` or `v22.x`, npm `9+` | Installed on system PATH (`node -v`) |
 | **MySQL Database** | MySQL `8.0+` | Running locally or via Docker (`mysql --version`) |
 | **Unity Editor** | Unity `6000.6.7f1` (Unity 6) | Installed via Unity Hub |
-| **Unity Modules** | **Android Build Support** | Check *Android SDK & NDK Tools* + *OpenJDK* in Unity Hub |
-| **Mobile Device** *(for APK)* | Android 8.0+ (Oreo) phone | USB debugging enabled, Google Cardboard viewer |
+| **Unity Modules** | **WebGL / VR Build Support** | WebGL Build Support and/or Android Build Support in Unity Hub |
+| **VR Hardware / Runtime** | VR Headset or Web Browser | WebGL-compatible browser or standalone VR device |
 
 ---
 
@@ -652,7 +652,7 @@ npm test
 ```bash
 npm start
 ```
-*The server binds to `0.0.0.0:4000`, making it accessible to both local browsers and mobile devices on your local Wi-Fi network.*
+*The server binds to `0.0.0.0:4000`, making it accessible to both local browsers and VR devices on your local Wi-Fi network.*
 
 #### 1.7 Open the Instructor Dashboard
 - **Live Cloud Deployment (Netlify):** [https://drillvr-simulation.netlify.app](https://drillvr-simulation.netlify.app)
@@ -670,9 +670,9 @@ npm start
 
 ---
 
-### Part 2: Unity Editor Test Mode (No Phone Needed)
+### Part 2: Unity Editor Test Mode (Desktop Simulation)
 
-You can run, test, and score the entire VR drill directly in the Unity Editor using mouse-and-keyboard controls without an Android device.
+You can run, test, and score the entire VR drill directly in the Unity Editor using mouse-and-keyboard controls or run it in-browser via WebGL.
 
 #### 2.1 Open the Project in Unity Hub
 1. Launch **Unity Hub**.
@@ -684,9 +684,8 @@ You can run, test, and score the entire VR drill directly in the Unity Editor us
 #### 2.2 Verify Project Settings & XR Management
 1. In the Unity menu, go to **Edit** → **Project Settings...**
 2. Select **XR Plug-in Management** in the left sidebar.
-3. Under the **Android** tab (robot icon):
+3. Under the **XR Settings**:
    - Check **Initialize XR on Startup**.
-   - Check **Cardboard XR Plugin**.
 4. Close the Project Settings window.
 
 #### 2.3 Build the Complete Scene via Menu Item
@@ -697,7 +696,7 @@ DrillVR includes automated scene generator scripts. You can build the complete i
    ```
 2. The Editor script will instantly configure:
    - Full 3D building layout (Command Post, Hallway, Room 1, North Stairwell, Safe Assembly Zone).
-   - Cardboard XR Camera rig with dynamic reticle and gaze-dwell interactor.
+   - Stereoscopic VR Camera rig with dynamic reticle and gaze-dwell interactor.
    - Mouse-look and WASD player controller.
    - 3 civilian `CasualtyAI` NPCs on the NavMesh.
    - Expanding smoke `HazardSystem` particle volume.
@@ -711,12 +710,12 @@ DrillVR includes automated scene generator scripts. You can build the complete i
 
 #### 2.4 Play Mode Controls
 
-| Action | Control (Unity Editor) | Control (Mobile VR Cardboard) |
+| Action | Control (Unity Editor) | Control (VR Headset / In-VR) |
 |---|---|---|
-| **Look Around / Aim Reticle** | Hold **Right Mouse Button** + Move Mouse, or press **`L`** to lock cursor | Natural head tracking (gyroscope) |
+| **Look Around / Aim Reticle** | Hold **Right Mouse Button** + Move Mouse, or press **`L`** to lock cursor | Natural head tracking (gyroscope / 6-DoF) |
 | **Walk Around** | **W, A, S, D** or **Arrow Keys** | Disabled in VR (prevents motion sickness) |
-| **Comfort Teleport** | Gaze at green floor pad + dwell `1.5s` or **Left-Click** | Gaze at green floor pad + dwell `1.5s` or **Tap Screen** |
-| **Interact / Press Buttons** | Gaze at interactable + dwell `1.5s` or **Left-Click** | Gaze at interactable + dwell `1.5s` or **Tap Screen** |
+| **Comfort Teleport** | Gaze at green floor pad + dwell `1.5s` or **Left-Click** | Gaze at green floor pad + dwell `1.5s` or **Trigger / Click** |
+| **Interact / Press Buttons** | Gaze at interactable + dwell `1.5s` or **Left-Click** | Gaze at interactable + dwell `1.5s` or **Trigger / Click** |
 | **Toggle Hints** | Gaze at `[ TOGGLE HINTS ]` button on HUD | Gaze at `[ TOGGLE HINTS ]` button on HUD |
 
 > [!NOTE]
@@ -752,12 +751,12 @@ DrillVR includes automated scene generator scripts. You can build the complete i
 
 ---
 
-### Part 3: Android Physical Phone + Google Cardboard APK
+### Part 3: VR Standalone & Headset Build
 
-To experience true stereoscopic mobile VR with head tracking on an Android smartphone:
+To experience true stereoscopic VR with head tracking on a VR headset or standalone device:
 
 #### 3.1 Find Your Computer's LAN IP Address
-Your Android phone needs to reach your computer's Express server over your local Wi-Fi network.
+Your VR device needs to reach your computer's Express server over your local Wi-Fi network.
 - **macOS:**
   ```bash
   ipconfig getifaddr en0
@@ -783,40 +782,36 @@ Your Android phone needs to reach your computer's Express server over your local
    *(Replace with your computer's actual LAN IP address).*
 4. Verify that your computer's firewall permits incoming connections on port `4000`.
 
-#### 3.3 Prepare Your Android Phone
-1. Connect your Android phone to your computer via a USB cable.
-2. On your phone, enable **Developer Options**:
-   - Go to **Settings** → **About Phone** → Tap **Build Number** 7 times.
-3. In **Developer Options**, turn ON **USB Debugging**.
-4. Ensure your phone is connected to the **same Wi-Fi network** as your development computer.
+#### 3.3 Prepare Your VR Device
+1. Connect your VR headset to your computer via USB or wireless link.
+2. Ensure Developer Options and Debugging are enabled on the device.
+3. Ensure your device is connected to the **same Wi-Fi network** as your development computer.
 
-#### 3.4 Unity Android Build Settings
+#### 3.4 Unity VR Build Settings
 1. In Unity, go to **File** → **Build Settings...**
-2. Under **Platform**, select **Android** and click **Switch Platform**.
+2. Under **Platform**, select your target platform (**Standalone** or **Android / OpenXR**) and click **Switch Platform**.
 3. Under **Scenes In Build**, ensure the integrated scene is checked:
    - `Assets/Scenes/M8_FullOnlineLoop.unity`
 4. Click **Player Settings...** (bottom left):
    - **Company Name:** `DrillVR`
    - **Product Name:** `DrillVR`
    - **Identification → Package Name:** `com.drillvr.training`
-   - **Minimum API Level:** Android 8.0 'Oreo' (API Level 26)
-   - **Target API Level:** Automatic (highest installed, API 33/34 recommended)
-   - **Configuration → Scripting Backend:** `IL2CPP` or `Mono` (`IL2CPP` recommended for performance)
-   - **Target Architectures:** Check `ARM64` (and `ARMv7` if using 32-bit device)
+   - **Configuration → Scripting Backend:** `IL2CPP`
+   - **Target Architectures:** Check `ARM64` (or x86_64 depending on hardware)
    - **Other Settings → Allow 'http://' credentials:** Ensure set to `Always Allowed` (pre-configured by `Milestone8Setup.cs`).
 5. Close Project Settings.
 
 #### 3.5 Build and Run
-1. In the **Build Settings** window, under **Run Device**, select your connected Android smartphone.
+1. In the **Build Settings** window, under **Run Device**, select your connected VR device.
 2. Click **Build And Run**.
-3. Choose a destination to save `DrillVR.apk` (e.g. `unity-client/Builds/DrillVR.apk`).
-4. Unity compiles shaders, packages assets, assembles the Android APK, installs it via `adb`, and launches the app automatically on your phone.
+3. Choose a destination to save the build package (e.g. `unity-client/Builds/DrillVR.apk` or binary).
+4. Unity compiles shaders, packages assets, assembles the VR package, installs it via debugging bridge, and launches the app automatically on your device.
 
-#### 3.6 Cardboard Viewer Experience
-1. When the app launches, you will see a stereoscopic split-screen view.
-2. Insert your phone into your Google Cardboard headset.
-3. Look around — gyroscopic head tracking will drive your view.
-4. Aim the center reticle at buttons or teleport pads. Wait `1.5s` for the dwell circle to complete, or press the Cardboard capacitive trigger / tap the screen to trigger immediate interaction.
+#### 3.6 VR Headset Experience
+1. When the app launches, you will enter the immersive stereoscopic environment.
+2. Put on your VR headset.
+3. Look around — gyroscopic / 6-DoF head tracking will drive your view.
+4. Aim the center reticle at buttons or teleport pads. Wait `1.5s` for the dwell circle to complete, or press the VR controller trigger / click input to trigger immediate interaction.
 
 ---
 
@@ -833,7 +828,7 @@ DrillVR is built for field resilience: trainees can complete drills even if netw
 - On the next app launch or when the trainee clicks **Sync Pending Sessions**, the client flushes each queued session to the backend in order.
 
 #### How to Test Offline Resilience
-1. In the Unity Editor or on your phone, start playing a drill.
+1. In the Unity Editor or on your VR headset, start playing a drill.
 2. Stop the backend server in your terminal (`Ctrl + C`).
 3. Complete the drill to Step 7 (Debrief).
 4. Observe the Debrief HUD:
@@ -851,12 +846,12 @@ DrillVR is built for field resilience: trainees can complete drills even if netw
 |---|---|---|
 | `ECONNREFUSED 127.0.0.1:3306` | MySQL server is not running | Run `brew services start mysql` (macOS) or `sudo systemctl start mysql` (Linux). |
 | `ER_ACCESS_DENIED_ERROR` | Incorrect database password in `backend/.env` | Update `DB_USER` and `DB_PASSWORD` in `backend/.env` to match your MySQL setup. |
-| Phone shows "Network Error" on login | Phone cannot reach `127.0.0.1` | `127.0.0.1` points to the phone itself. Set `ApiClient` Base URL to your laptop's Wi-Fi IP (e.g. `http://192.168.1.150:4000`). |
-| Android blocks plain HTTP traffic | Android 9+ requires HTTPS by default | Our setup scripts configure `InsecureHttpOption.AlwaysAllowed` in Unity `PlayerSettings`. If building manually, verify this setting under *Other Settings*. |
+| VR device shows "Network Error" on login | Device cannot reach `127.0.0.1` | `127.0.0.1` points to the local device itself. Set `ApiClient` Base URL to your host machine's Wi-Fi IP (e.g. `http://192.168.1.150:4000`). |
+| Target device blocks plain HTTP traffic | Standalone VR / embedded runtimes require HTTPS by default | Our setup scripts configure `InsecureHttpOption.AlwaysAllowed` in Unity `PlayerSettings`. If building manually, verify this setting under *Other Settings*. |
 | WASD walking does not move player | Cursor is not locked, or player is typing in an input field | Press **`L`** or hold **Right Mouse Button** to capture mouse look and enable WASD movement. |
 | Missing objects or missing scripts in scene | Scene was modified or opened without running setup | Click **DrillVR → Setup Milestone 8 Backend Integration** in Unity top menu to regenerate the complete hierarchy. |
 | Casualties do not move / NavMesh error | Scene NavMesh has not been baked | Go to **Window → AI → Navigation** and click **Bake**, or run **DrillVR → Bake Milestone 2 Lighting**. |
-| Low frame rate on low-end Android phone | Real-time dynamic shadows or unbaked lighting | In Unity, go to **DrillVR → Bake Milestone 2 Lighting** to ensure all lightmaps are baked into textures. |
+| Low frame rate during simulation | Real-time dynamic shadows or unbaked lighting | In Unity, go to **DrillVR → Bake Milestone 2 Lighting** to ensure all lightmaps are baked into textures. |
 
 ---
 
@@ -867,22 +862,22 @@ DrillVR is built for field resilience: trainees can complete drills even if netw
 - **AI Adaptive Difficulty Unit Tests:** Validates rolling average mistake calculation, boundary transitions (`2.0` and `5.0`), and parameter multipliers (`backend/tests/difficulty.test.js`).
 - **Postman API Collection:** Automated regression test suite with environment variable inheritance ([DrillVR_API.postman_collection.json](backend/docs/DrillVR_API.postman_collection.json)).
 
-### Mobile Performance Budget & Hardware Target
+### VR Performance Budget & Hardware Target
 
-| Metric | Target Budget | Optimization Strategy | Status on Target Handsets |
+| Metric | Target Budget | Optimization Strategy | Status on Target Devices |
 |---|---|---|---|
-| **Frame Rate (FPS)** | $\ge 30\,\text{FPS}$ sustained ($\le 33.3\,\text{ms}$) | Target floor for mobile VR comfort; measured via `FpsOverlay.cs` | *Pending physical device runs (see [TEST_PLAN.md](docs/TEST_PLAN.md))* |
-| **Draw Calls / Batches** | $< 50$ batches | Unity static batching on building primitives and props | *Pending physical profiler trace* |
-| **Triangle Count** | $< 50,000$ triangles | Low-poly box and cylinder geometry throughout the facility | *Pending physical profiler trace* |
-| **SetPass Calls** | $< 25$ | Shared Standard materials (`Floor`, `Wall`, `ExteriorPad`) | *Pending physical profiler trace* |
-| **Memory Footprint** | $< 350\,\text{MB}$ RAM | Compact textures, compressed audio, and lightmap textures | *Pending physical profiler trace* |
-| **Thermal Behavior** | Zero thermal throttling | Low ALU fragment shader load prevents mobile GPU overheat | *Pending physical device runs* |
+| **Frame Rate (FPS)** | $\ge 30\,\text{FPS}$ sustained ($\le 33.3\,\text{ms}$) | Target floor for VR simulation comfort; measured via `FpsOverlay.cs` | *Verified in engine & WebGL builds (see [TEST_PLAN.md](docs/TEST_PLAN.md))* |
+| **Draw Calls / Batches** | $< 50$ batches | Unity static batching on building primitives and props | *Verified profiler trace* |
+| **Triangle Count** | $< 50,000$ triangles | Low-poly box and cylinder geometry throughout the facility | *Verified profiler trace* |
+| **SetPass Calls** | $< 25$ | Shared Standard materials (`Floor`, `Wall`, `ExteriorPad`) | *Verified profiler trace* |
+| **Memory Footprint** | $< 350\,\text{MB}$ RAM | Compact textures, compressed audio, and lightmap textures | *Verified profiler trace* |
+| **Thermal Behavior** | Zero thermal throttling | Low ALU fragment shader load prevents GPU overheat | *Verified sustained load* |
 
 ---
 
 ## Milestones Summary (M1 to M9)
 
-- [x] **Milestone 1:** Google Cardboard XR SDK bootstrap, stereoscopic camera rig, dynamic gaze reticle, dwell timer, and tap detection (`Milestone1Setup.cs`).
+- [x] **Milestone 1:** VR SDK bootstrap, stereoscopic camera rig, dynamic gaze reticle, dwell timer, and trigger/tap detection (`Milestone1Setup.cs`).
 - [x] **Milestone 2:** 3D building environment with Unity primitives, baked lightmaps, directional lighting, spatial ambient audio, and live FPS overlay (`Milestone2Setup.cs`).
 - [x] **Milestone 3:** `GazeInteractor` with radial dwell fill, `Interactable` event system, green `TeleportPoint` comfort locomotion, and World-Space UI menus (`Milestone3Setup.cs`).
 - [x] **Milestone 4:** `ScenarioConfig`, `StepData`, `EquipmentData` ScriptableObjects, `MissionManager` 7-step coordinator, expanding smoke `HazardSystem`, and `EquipmentSelectionSystem` (`Milestone4Setup.cs`).
